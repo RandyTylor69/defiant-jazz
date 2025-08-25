@@ -1,4 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap");
 
+
+@layer components {
+  .btn-primary {
+    @apply bg-black text-primary border-2 border-black text-sm md:text-[1rem]
+        px-2 py-1 rounded-[2rem] 
+        hover:bg-black/70 duration-300;
+  }
+  .btn-secondary {
+    @apply bg-primary text-black/70 border-2 border-black/20  text-sm
+        px-2 py-1 rounded-[2rem] 
+        hover:bg-secondary hover:border-2 hover:text-black duration-300;
+  }
+  .btn-tertiary {
+    @apply bg-secondary text-black border-black  text-sm
+        p-2 rounded-[50%] 
+        hover:bg-gray-300 hover:text-black duration-300;
+  }
+}
