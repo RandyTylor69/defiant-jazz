@@ -1,0 +1,12 @@
+{
+  "name": "music-app-backend",
+  "version": "1.0.0",
+  "description": "backend for the upcoming project, code name \"defiant jazz\".",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Christopher M",
+  "license": "ISC"
+}
