@@ -38,8 +38,8 @@ export default function Home() {
 
   return (
     <div
-      className="w-full max-w-[45rem] mx-auto
-        flex flex-col sm:flex-row font-light gap-6"
+      className="w-full max-w-[55rem] mx-auto 
+        flex flex-col sm:flex-row font-light gap-6 md:gap-20"
     >
       {/** ---- current favourite ---------- */}
       <section className="w-full">

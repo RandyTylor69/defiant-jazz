@@ -21,3 +21,14 @@ export const currPlaying = [{
 }]
 
 export const myPalette= ["#787BB2","#45140D", "#7D919A", "#291B1A"]
+
+
+export const weeklyPopular = [{
+    name:"Mia & Sebastian's theme"
+},{
+    name:"River flows in you"
+},{
+    name:"clair de lune"
+},{
+    name:"gymnopedie"
+},]
