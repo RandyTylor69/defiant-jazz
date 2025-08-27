@@ -42,20 +42,29 @@ export default function Home() {
         flex flex-col sm:flex-row font-light gap-6 md:gap-20"
     >
       {/** ---- current favourite ---------- */}
-      <section className="w-full">
+      <section className="w-full max-w-[50%] ">
+
+        {/** --(1)-- */}
         <p className=" text-sm mb-4">CURRENT FAVOURITE</p>
-        <article className="flex flex-row sm:flex-col gap-4 text-black/70">
+        <article
+          className="max-w-full
+        flex flex-row sm:flex-col gap-4 text-black/70"
+        >
           <h1
-            className="font-bold
+            className="font-bold break-words  max-w-full
                     text-4xl md:text-6xl"
           >
-            LA FILLE AUX CHEVEAUX DE LIN
+            ASJHVEQWOEIHOBHDSAHDVASDIOUGWE
           </h1>
+
+          {/** --(2)-- */}
           <div
-            className="flex flex-col w-fit h-fit pl-2 sm:pt-2 gap-2 mt-4 sm:mt-0
+            className="flex flex-col w-fit h-fit pl-2 sm:pt-2 gap-2 mt-4 sm:mt-0 
                     border-l-[1px] sm:border-t-[1px] sm:border-l-[0px] border-black/20"
           >
-            <h2 className="text-2xl md:text-3xl lg:text-4xl leading-5">384 days</h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl leading-5">
+              384 days
+            </h2>
             <p className="text-xs md:text-sm leading-3">worth of practice</p>
           </div>
         </article>

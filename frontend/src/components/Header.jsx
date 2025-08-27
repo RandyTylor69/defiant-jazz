@@ -1,6 +1,13 @@
 import { FaPlus } from "react-icons/fa6";
+import { FaSearch } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import SearchBar from "./SearchBar";
+
 export default function Header() {
+
+  const [isSearching, setIsSearching] = useState(false);
+
   return (
     <header className="w-full max-w-[55rem]">
       <nav
@@ -8,7 +15,12 @@ export default function Header() {
       pt-4"
       >
         {/** ---- left nav div ------- */}
-        <div className="flex flex-row justify-between gap-4">
+
+        <div
+          className={`flex flex-row justify-between gap-2 md:gap-4
+         
+          `}
+        >
           <NavLink
             to={"/"}
             className={({ isActive }) =>
@@ -28,9 +40,21 @@ export default function Header() {
         </div>
 
         {/** ---- rightnav div ------- */}
-        <button className="btn-tertiary">
-          <FaPlus />
-        </button>
+        {isSearching ? (
+          <SearchBar setIsSearching={setIsSearching} />
+        ) : (
+          <div className="flex flex-row gap-4">
+            <button
+              className="btn-tertiary"
+              onClick={() => setIsSearching(true)}
+            >
+              <FaSearch />
+            </button>
+            <button className="btn-tertiary">
+              <FaPlus />
+            </button>
+          </div>
+        )}
       </nav>
     </header>
   );
