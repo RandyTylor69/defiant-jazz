@@ -3,6 +3,7 @@ import { FaSearch } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import SearchBar from "./SearchBar.tsx";
+import { FaUserLarge } from "react-icons/fa6";
 
 export default function Header() {
 
@@ -49,6 +50,9 @@ export default function Header() {
               onClick={() => setIsSearching(true)}
             >
               <FaSearch />
+            </button>
+            <button className="btn-tertiary">
+              <FaUserLarge />
             </button>
             <button className="btn-tertiary">
               <FaPlus />

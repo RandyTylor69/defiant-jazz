@@ -1,6 +1,6 @@
 import { FaSearch } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function SearchBar({ setIsSearching }) {

@@ -8,7 +8,7 @@ import Sheet from "./pages/Sheet.tsx";
 
 function App() {
   return (
-    <BrowserRouter forceRefresh={true}>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
