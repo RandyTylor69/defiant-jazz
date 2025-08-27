@@ -26,7 +26,7 @@ export default function Search() {
     flex flex-col gap-6"
     >
       <p className="text-sm uppercase font-light">
-        Search results for "{params}". <span className="text-black/20 italic">Make sure to include any accents, such as "Rêverie".</span>
+        Search results for "{params}". { results && <span className="text-black/20 italic">Make sure to include any accents, such as "Rêverie".</span>}
       </p>
       <ul className="">
         {results? (results.map((item) => {
@@ -46,7 +46,7 @@ export default function Search() {
               </li>
             </Link>
           );
-        })) : <p className="text-black/20 italic">No results :( Make sure to include any accents. For exampe: "Rêverie" instead of "Reverie".</p>}
+        })) : <p className="text-black/20 italic">No results :( Make sure to include any accents. For example: "Rêverie" instead of "Reverie".</p>}
       </ul>
     </div>
   );
