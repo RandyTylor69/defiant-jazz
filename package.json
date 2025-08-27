@@ -8,5 +8,8 @@
     "frontend": "npm start --prefix frontend",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
     "build": "npm run build --prefix frontend"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0"
   }
 }

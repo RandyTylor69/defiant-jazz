@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 export default function SearchBar({ setIsSearching }) {
   const [searchParams, setSearchParams] = useState("");
   const navigate = useNavigate();
-  function handleChange(value) {
+  function handleChange(value:string) {
     setSearchParams(value);
   }
-  function handleSubmit(e) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     navigate(`search/${searchParams}`);

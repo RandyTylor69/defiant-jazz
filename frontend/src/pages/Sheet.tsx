@@ -27,13 +27,9 @@ export default function Sheet() {
     // Click on a half-star. All its previous ones (include itself) should light up.
     // All its preceding ones should dim out.
 
-    
-
     setRatingBg(prev=>prev.map(i=>(
         {...i, on: i.id > toggleID? false : true }
     )))
-
-
   }
 
   
@@ -41,7 +37,7 @@ export default function Sheet() {
   const ratingBgMapped = ratingBg.map((item) => 
     (
     <div key={item.id} className={`w-[1.2rem] h-full cursor-pointer
-    ${item.on? "bg-yellow-500":"bg-black/10"} `}
+    ${item.on? "bg-amber-600":"bg-black/10"} `}
     onClick={()=>toggleRating(item.id)}
     ></div>
   ));

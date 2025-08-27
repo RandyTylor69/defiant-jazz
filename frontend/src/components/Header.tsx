@@ -2,7 +2,7 @@ import { FaPlus } from "react-icons/fa6";
 import { FaSearch } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
-import SearchBar from "./SearchBar";
+import SearchBar from "./SearchBar.tsx";
 
 export default function Header() {
 

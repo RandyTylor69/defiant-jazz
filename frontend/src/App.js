@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
-import Home from "./pages/Home";
+import Layout from "./components/Layout.tsx";
+import Home from "./pages/Home.tsx";
 import "./App.css";
-import Dashboard from "./pages/community/Dashboard";
-import Search from "./pages/Search";
-import Sheet from "./pages/Sheet";
+import Dashboard from "./pages/community/Dashboard.tsx";
+import Search from "./pages/Search.tsx";
+import Sheet from "./pages/Sheet.tsx";
 
 function App() {
   return (
