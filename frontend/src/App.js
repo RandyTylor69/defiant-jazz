@@ -5,6 +5,7 @@ import "./App.css";
 import Dashboard from "./pages/community/Dashboard.tsx";
 import Search from "./pages/Search.tsx";
 import Sheet from "./pages/Sheet.tsx";
+import Profile from "./pages/Profile.tsx";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="search/:params" element={<Search />} />
           <Route path="sheet/:title/:composer" element={<Sheet />} />
+          <Route path=":displayName" element={<Profile />} />
 
           <Route path="community">
             <Route index element={<Dashboard />}></Route>

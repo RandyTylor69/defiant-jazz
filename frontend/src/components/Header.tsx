@@ -1,13 +1,16 @@
 import { FaPlus } from "react-icons/fa6";
 import { FaSearch } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
 import SearchBar from "./SearchBar.tsx";
 import { FaUserLarge } from "react-icons/fa6";
+import { useAuth } from "./AuthProvider.tsx";
+import { useLayout } from "./Layout.tsx";
 
 export default function Header() {
-
   const [isSearching, setIsSearching] = useState(false);
+  const { currentUser, userLoggedIn } = useAuth();
+  const {setIsLogging} = useLayout()
 
   return (
     <header className="w-full max-w-[55rem]">
@@ -51,12 +54,24 @@ export default function Header() {
             >
               <FaSearch />
             </button>
-            <button className="btn-tertiary">
-              <FaUserLarge />
-            </button>
-            <button className="btn-tertiary">
-              <FaPlus />
-            </button>
+            {userLoggedIn && (
+              <NavLink
+                to={`${currentUser?.displayName}`}
+               
+              >
+                {({isActive})=>(
+                   <button className={`btn-tertiary ${isActive? "bg-black/70 text-primary" : ""}`}>
+                  <FaUserLarge />
+                </button>
+                )}
+               
+              </NavLink>
+            )}
+            {userLoggedIn && (
+              <button className="btn-tertiary" onClick={()=>setIsLogging(prev=>!prev)}>
+                <FaPlus />
+              </button>
+            )}
           </div>
         )}
       </nav>

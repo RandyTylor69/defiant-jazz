@@ -7,6 +7,7 @@ import {
   doSignInWithGoogle,
   doCreateUserWithEmailAndPassword,
 } from "../firebase/auth.ts";
+
 import { useAuth } from "../components/AuthProvider.tsx";
 import { useState } from "react";
 import SignIn from "../components/SignIn.tsx";
@@ -16,7 +17,7 @@ export default function Home() {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   // the useAuth() hook contains the user's logged in status.
-  const { userLoggedIn } = useAuth();
+  const { userLoggedIn} = useAuth();
 
   // temp f() for palette
   function isEven(num: number) {
@@ -50,7 +51,7 @@ export default function Home() {
     return (
       <div
         key={p.id}
-        className={`w-full h-[10rem] rounded-[1.5rem] 
+        className={`w-full h-[10rem] rounded-[1.5rem]  z-4
         transform hover:-translate-y-[6rem] duration-300 ease-in-out
         absolute p-4`}
         style={{ backgroundColor: myPalette[p.id], top: `${p.id * 4}rem` }}
@@ -102,10 +103,18 @@ export default function Home() {
         </article>
         {/** ---- log in window ---- */}
         {isSigningIn && (
-          <SignIn signIn={signIn} setIsSigningIn={setIsSigningIn} signInWithGoogle={signInWithGoogle} />
+          <SignIn
+            signIn={signIn}
+            setIsSigningIn={setIsSigningIn}
+            signInWithGoogle={signInWithGoogle}
+          />
         )}
         {isRegistering && (
-          <Register register={register} setIsRegistering={setIsRegistering}  signInWithGoogle={signInWithGoogle} />
+          <Register
+            register={register}
+            setIsRegistering={setIsRegistering}
+            signInWithGoogle={signInWithGoogle}
+          />
         )}
       </div>
     );
