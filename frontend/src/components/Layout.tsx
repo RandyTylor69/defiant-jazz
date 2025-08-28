@@ -2,21 +2,38 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header.tsx";
 import { useState, createContext, useContext } from "react";
 import LogSheet from "./LogSheet.tsx";
+import LogSheetDetail from "./LogSheetDetail.tsx";
 
 type LayoutContextType = {
   setIsLogging: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoggingDetail: React.Dispatch<React.SetStateAction<boolean>>;
+  logTarget: LogTargetType;
+  setLogTarget: React.Dispatch<React.SetStateAction<LogTargetType>>;
+};
+
+type LogTargetType = {
+  fullName: string | null;
+  title: string | null;
+  composer: string | null;
 };
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
 export default function Layout() {
   const [isLogging, setIsLogging] = useState(false);
-  const [isLoggingDetail, setIsLoggingDetail] = useState(false)
+  const [isLoggingDetail, setIsLoggingDetail] = useState(false);
+  const [logTarget, setLogTarget] = useState<LogTargetType>({
+    // this is the sheet that the user wants to log.
+    fullName: null,
+    title: null,
+    composer: null,
+  });
   return (
-    <LayoutContext.Provider value={{ setIsLogging, setIsLoggingDetail }}>
-
+    <LayoutContext.Provider
+      value={{ setIsLogging, setIsLoggingDetail, logTarget, setLogTarget }}
+    >
       {isLogging && <LogSheet />}
+      {isLoggingDetail && <LogSheetDetail />}
 
       <div
         className="min-h-screen h-fit bg-primary font-HKGrotesk

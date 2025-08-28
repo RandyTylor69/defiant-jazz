@@ -22,7 +22,7 @@ export default function Sheet() {
 
 
 
-  function toggleRating(toggleID) {
+  function toggleRating(toggleID:number) {
 
     // Click on a half-star. All its previous ones (include itself) should light up.
     // All its preceding ones should dim out.

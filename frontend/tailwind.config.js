@@ -9,6 +9,9 @@ export default {
       },
       fontFamily:{
         HKGrotesk:["Hanken Grotesk"]
+      },
+      transitionProperty: {
+        'height': 'height'
       }
     },
   },

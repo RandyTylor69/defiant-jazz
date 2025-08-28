@@ -15,7 +15,9 @@ type SearchResultType = {
 export default function LogSheet() {
   const [searchParams, setSearchParams] = useState("");
   const [results, setResults] = useState<SearchResultType[] | null>(null);
-  const { setIsLogging } = useLayout();
+  
+  const { setIsLogging, setIsLoggingDetail, setLogTarget } = useLayout();
+  
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,7 +46,8 @@ export default function LogSheet() {
         className="absolute w-[90vw] max-w-[30rem] h-fit p-4 border-black/20 border-2
                 bg-primary text-black/70
                 flex flex-col justify-center items-center gap-6
-                top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%]"
+                top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%]
+                "
       >
         <div className="w-full flex justify-between">
           <h1 className="uppercase text-sm font-thin italic">
@@ -86,7 +89,17 @@ export default function LogSheet() {
                 : "";
               const title = result.title.split("(")[0].trim();
               return (
-                <li className="hover:bg-black/30 duration-200 cursor-pointer px-2 py-1">
+                <li className="hover:bg-black/30 duration-200 cursor-pointer px-2 py-1"
+                onClick={()=>{
+                  setIsLogging(false)
+                  setIsLoggingDetail(true)
+                  setLogTarget({
+                    fullName: result.title,
+                    title: title,
+                    composer: composer
+                  })
+                }}
+                >
                   {title}, <span className="text-black/30 italic">{composer}</span>
                 </li>
               );

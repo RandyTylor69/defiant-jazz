@@ -1,97 +1,120 @@
 import { RxCross1 } from "react-icons/rx";
-import { FaSearch } from "react-icons/fa";
+import { TfiAngleLeft } from "react-icons/tfi";
 import { useLayout } from "./Layout.tsx";
 import { useState, useEffect } from "react";
 
-type SearchResultType = {
-  ns: number;
-  title: string;
-  snippet: string;
-  timestamp: string;
-  size: number;
-  wordcount: number;
-};
-
 export default function LogSheetDetail() {
-  const [searchParams, setSearchParams] = useState("");
-  const [results, setResults] = useState<SearchResultType[] | null>(null);
-  const { setIsLogging } = useLayout();
+  const { setIsLogging, setIsLoggingDetail, logTarget, setLogTarget } =
+    useLayout();
+  const [ratingBg, setRatingBg] = useState([
+    { id: 0, on: false },
+    { id: 1, on: false },
+    { id: 2, on: false },
+    { id: 3, on: false },
+    { id: 4, on: false },
+    { id: 5, on: false },
+    { id: 6, on: false },
+    { id: 7, on: false },
+    { id: 8, on: false },
+    { id: 9, on: false },
+  ]);
+
+  const [rating, setRating] = useState<number>(0);
+  const [review, setReview] = useState<string>("");
+  const [date, setDate] = useState<string>("")
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
-    window.location.reload();
   }
 
-  useEffect(() => {
-    async function fetchData() {
-      if (!searchParams) return;
-      const res = await fetch(
-        `${process.env.REACT_APP_SERVER_ROUTE}/api/imslp?q=${encodeURIComponent(
-          searchParams
-        )}`
-      );
-      const data = await res.json();
+  // -------------- RATING MECHANICS -------------------
+  function toggleRating(toggleID: number) {
+    // Click on a half-star. All its previous ones (include itself) should light up.
+    // All its preceding ones should dim out.
 
-      data.query.search.length > 0 && setResults(data.query.search);
-    }
-    fetchData();
-  }, [searchParams]);
-console.log(results)
+    setRatingBg((prev) =>
+      prev.map((i) => ({ ...i, on: i.id > toggleID ? false : true }))
+    );
+  }
+  const ratingBgMapped = ratingBg.map((item) => (
+    <div
+      key={item.id}
+      className={`w-[1.2rem] h-full cursor-pointer
+    ${item.on ? "bg-amber-600" : "bg-black/20"} `}
+      onClick={() => toggleRating(item.id)}
+    ></div>
+  ));
+
+  // __________________________________________________________________________
+
   return (
     <div className="inset-0 absolute bg-black/80 backdrop-blur-md z-[999] ">
       <div
-        className="absolute w-[90vw] max-w-[30rem] h-fit p-4 border-black/20 border-2
+        className="absolute w-[90vw] max-w-[40rem] h-fit p-4 pb-16 border-black/20 border-2
                 bg-primary text-black/70
                 flex flex-col justify-center items-center gap-6
                 top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%]"
       >
-        <div className="w-full flex justify-between">
-          <h1 className="uppercase text-sm font-thin italic">
-            Add a sheet music to your repetoire...
-          </h1>
+        <section className="w-full flex justify-between text-black/40 ">
           <h2
-            className="absolute top-4 right-4 text-black/40 cursor-pointer"
-            onClick={() => setIsLogging(false)}
+            className=" cursor-pointer"
+            onClick={() => {
+              setIsLoggingDetail(false);
+              setIsLogging(true);
+              setLogTarget({
+                fullName: null,
+                title: null,
+                composer: null,
+              });
+            }}
+          >
+            <TfiAngleLeft />
+          </h2>
+          <h2
+            className=" cursor-pointer"
+            onClick={() => {
+              setIsLoggingDetail(false);
+              setIsLogging(false);
+            }}
           >
             <RxCross1 />
           </h2>
-        </div>
+        </section>
+        <section className="w-full h-full flex flex-col gap-4">
+          <div className="w-full flex flex-col">
+            <h1 className="text-2xl font-serif">{logTarget.title}</h1>
+            <h2 className="text-black/30 italic">{logTarget.composer}</h2>
+          </div>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="w-full flex gap-2 items-center">
+              <p className="text-sm text-black/30">Practiced since</p>
+              <input type="date" className="log-date-input" value={date} onChange={(e)=>setDate(e.target.value)} />
+            </div>
 
-        <form
-          className="relative flex justify-center items-center w-full"
-          onSubmit={handleSubmit}
-        >
-          <input
-            type="text"
-            value={searchParams}
-            onChange={(e) => setSearchParams(e.target.value)}
-            className="p-2 outline-none w-full font-thin"
-            placeholder="Remember to include the accent in the title :)"
-            required
-          />
-          <button type="submit" className="absolute right-2 text-black/20">
-            <FaSearch />
-          </button>
-        </form>
+            <textarea
+              name="review"
+              className="log-textarea"
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              placeholder="write a review..."
+            />
 
-        <ul
-          className="overflow-y-scroll flex flex-col max-h-[20rem]
-        gap-4 w-full "
-        >
-          {results &&
-            results.map((result: SearchResultType) => {
-              const composer = result.title.includes("(")
-                ? result.title.split("(")[1].split(")")[0].trim()
-                : "";
-              const title = result.title.split("(")[0].trim();
-              return (
-                <li className="hover:bg-black/30 duration-200 cursor-pointer px-2 py-1">
-                  {title}, <span className="text-black/30 italic">{composer}</span>
-                </li>
-              );
-            })}
-        </ul>
+            {/** ---- rating background ----  */}
+            
+            <div className="relative flex w-full h-fit ">
+              <p className="ml-1 text-sm absolute text-black/30">Rate this piece</p>
+              <div className="absolute w-[7rem] h-[1.3rem] top-6 flex flex-row  ">
+                {ratingBgMapped}
+              </div>
+              <img
+                src="/images/log-rating-mask.png"
+                alt="rating mask"
+                className="absolute w-[7rem] object-cover top-6 pointer-events-none"
+              />
+              <button className="absolute right-0 top-4 btn-primary !px-3 !py-1">Log</button>
+            </div>
+          </form>
+        </section>
       </div>
     </div>
   );
