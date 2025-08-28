@@ -15,9 +15,8 @@ type SearchResultType = {
 export default function LogSheet() {
   const [searchParams, setSearchParams] = useState("");
   const [results, setResults] = useState<SearchResultType[] | null>(null);
-  
-  const { setIsLogging, setIsLoggingDetail, setLogTarget } = useLayout();
-  
+
+  const { setIsLogging, setIsLoggingDetail, setLogTarget, slugify } = useLayout();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,6 +38,9 @@ export default function LogSheet() {
     }
     fetchData();
   }, [searchParams]);
+
+
+
 
   return (
     <div className="inset-0 absolute bg-black/80 backdrop-blur-md z-[999] ">
@@ -88,19 +90,23 @@ export default function LogSheet() {
                 ? result.title.split("(")[1].split(")")[0].trim()
                 : "";
               const title = result.title.split("(")[0].trim();
+              const sheetId = slugify(result.title)
               return (
-                <li className="hover:bg-black/30 duration-200 cursor-pointer px-2 py-1"
-                onClick={()=>{
-                  setIsLogging(false)
-                  setIsLoggingDetail(true)
-                  setLogTarget({
-                    fullName: result.title,
-                    title: title,
-                    composer: composer
-                  })
-                }}
+                <li
+                  className="hover:bg-black/30 duration-200 cursor-pointer px-2 py-1"
+                  onClick={() => {
+                    setIsLogging(false);
+                    setIsLoggingDetail(true);
+                    setLogTarget({
+                      fullName: result.title,
+                      title: title,
+                      composer: composer,
+                      sheetId: sheetId,
+                    });
+                  }}
                 >
-                  {title}, <span className="text-black/30 italic">{composer}</span>
+                  {title},{" "}
+                  <span className="text-black/30 italic">{composer}</span>
                 </li>
               );
             })}
@@ -108,4 +114,7 @@ export default function LogSheet() {
       </div>
     </div>
   );
+
 }
+
+

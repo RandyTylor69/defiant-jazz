@@ -8,15 +8,17 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 
-export function doCreateUserWithEmailAndPassword(
+export async function doCreateUserWithEmailAndPassword(
   email: string,
   password: string
 ) {
-  return createUserWithEmailAndPassword(auth, email, password);
+  const result = await createUserWithEmailAndPassword(auth, email, password);
+  return result;
 }
 
-export function doSignInWithEmailAndPassword(email: string, password: string) {
-  return signInWithEmailAndPassword(auth, email, password);
+export async function doSignInWithEmailAndPassword(email: string, password: string) {
+  const result = await signInWithEmailAndPassword(auth, email, password);
+  return result
 }
 
 export async function doSignInWithGoogle() {
@@ -25,6 +27,7 @@ export async function doSignInWithGoogle() {
     const result = await signInWithPopup(auth, provider);
 
     return result;
+
   } catch (err: any) {
     if (err.code === "auth/popup-closed-by-user") {
       console.log("popup closed before any actions.");

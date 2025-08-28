@@ -2,10 +2,12 @@ import { RxCross1 } from "react-icons/rx";
 import { TfiAngleLeft } from "react-icons/tfi";
 import { useLayout } from "./Layout.tsx";
 import { useState, useEffect } from "react";
+import { addReviewToDB } from "../firebase/database.ts";
 
 export default function LogSheetDetail() {
-  const { setIsLogging, setIsLoggingDetail, logTarget, setLogTarget } =
+  const { setIsLogging, setIsLoggingDetail, logTarget, setLogTarget, uid } =
     useLayout();
+  // logTarget contains: fullName, title, composer.
   const [ratingBg, setRatingBg] = useState([
     { id: 0, on: false },
     { id: 1, on: false },
@@ -20,11 +22,22 @@ export default function LogSheetDetail() {
   ]);
 
   const [rating, setRating] = useState<number>(0);
-  const [review, setReview] = useState<string>("");
-  const [date, setDate] = useState<string>("")
+  const [content, setContent] = useState<string>("");
+  const [practicedSince, setPracticedSince] = useState<string>("");
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if(!uid)return;
+    addReviewToDB({
+      fullName: logTarget.fullName,
+      title: logTarget.title,
+      composer: logTarget.composer,
+      practicedSince: practicedSince,
+      rating: rating,
+      content: content,
+      sheetId: logTarget.sheetId,
+      uid: uid,
+    });
   }
 
   // -------------- RATING MECHANICS -------------------
@@ -32,9 +45,11 @@ export default function LogSheetDetail() {
     // Click on a half-star. All its previous ones (include itself) should light up.
     // All its preceding ones should dim out.
 
-    setRatingBg((prev) =>
-      prev.map((i) => ({ ...i, on: i.id > toggleID ? false : true }))
-    );
+    setRatingBg((prev) => {
+      const ratingNum = (toggleID + 1) / 2;
+      setRating(ratingNum);
+      return prev.map((i) => ({ ...i, on: i.id > toggleID ? false : true }));
+    });
   }
   const ratingBgMapped = ratingBg.map((item) => (
     <div
@@ -65,6 +80,7 @@ export default function LogSheetDetail() {
                 fullName: null,
                 title: null,
                 composer: null,
+                sheetId: null,
               });
             }}
           >
@@ -88,21 +104,28 @@ export default function LogSheetDetail() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="w-full flex gap-2 items-center">
               <p className="text-sm text-black/30">Practiced since</p>
-              <input type="date" className="log-date-input" value={date} onChange={(e)=>setDate(e.target.value)} />
+              <input
+                type="date"
+                className="log-date-input"
+                value={practicedSince}
+                onChange={(e) => setPracticedSince(e.target.value)}
+              />
             </div>
 
             <textarea
-              name="review"
+              name="content"
               className="log-textarea"
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               placeholder="write a review..."
             />
 
             {/** ---- rating background ----  */}
-            
+
             <div className="relative flex w-full h-fit ">
-              <p className="ml-1 text-sm absolute text-black/30">Rate this piece</p>
+              <p className="ml-1 text-sm absolute text-black/30">
+                Rate this piece
+              </p>
               <div className="absolute w-[7rem] h-[1.3rem] top-6 flex flex-row  ">
                 {ratingBgMapped}
               </div>
@@ -111,7 +134,9 @@ export default function LogSheetDetail() {
                 alt="rating mask"
                 className="absolute w-[7rem] object-cover top-6 pointer-events-none"
               />
-              <button className="absolute right-0 top-4 btn-primary !px-3 !py-1">Log</button>
+              <button className="absolute right-0 top-4 btn-primary !px-3 !py-1">
+                Log
+              </button>
             </div>
           </form>
         </section>

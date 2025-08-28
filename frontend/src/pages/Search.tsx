@@ -11,21 +11,35 @@ export default function Search() {
   const [results, setResults] = useState<SearchItem[]>([]);
   const { params } = useParams<{params:string}>(); // Typing the content of the object returned by useParams()
 
+  //const [isSearch, setIsSearching] = useState(false)
   useEffect(() => {
+
     async function fetchData() {
       if(!params) return;
+      //setIsSearching(true)
       const res = await fetch(
         `${process.env.REACT_APP_SERVER_ROUTE}/api/imslp?q=${encodeURIComponent(params)}`
       );
       const data = await res.json();
 
 
-      data.query.search.length>0 && setResults(data.query.search);
+      data.query.search!=null && setResults(data.query.search);
+      //setIsSearching(false)
     }
     fetchData();
   }, []);
 
-  //console.log(results)
+   function slugify(fullName: string):string {
+    return fullName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")  // remove special chars
+      .replace(/\s+/g, "-")          // replace spaces with dashes
+      .replace(/-+/g, "-");          // remove repeated dashes
+  }
+
+
+// console.log(results)
+
 
   return (
     <div
@@ -33,18 +47,18 @@ export default function Search() {
     flex flex-col gap-6"
     >
       <p className="text-sm uppercase font-light">
-        Search results for "{params}". { results && <span className="text-black/20 italic">Make sure to include any accents, such as "Rêverie".</span>}
+        Search results for "{params}". { results.length>0 && <span className="text-black/20 italic">Make sure to include any accents, such as "Rêverie".</span>}
       </p>
       <ul className="">
-        {results.length > 0 ? (results.map((item)=> {
+        {results.length ? (results.map((item)=> {
           // manually extract the composer name and the title.
           const composer = item.title.includes("(")
             ? item.title.split("(")[1].split(")")[0].trim()
             : "";
           const title = item.title.split("(")[0].trim();
-          
+          const slugFullName = slugify(item.title)
           return (
-            <Link to={`/sheet/${title}/${composer}`}>
+            <Link to={`/sheet/${slugFullName}`} state={{title, composer}}>
               <li
                 className="py-2 mb-6 text-black/70 border-b-[2px] border-black/10"
                 key={item.title}

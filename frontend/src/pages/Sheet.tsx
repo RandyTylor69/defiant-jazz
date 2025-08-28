@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 export default function Sheet() {
-  const { title, composer } = useParams();
+  const location = useLocation();
+  const {title, composer} = (location.state)
 
   // TEMP STATES - DELETE LATER
   const [played, setPlayed] = useState(false);
@@ -54,7 +55,7 @@ export default function Sheet() {
       {/** ---- info + review section ---- */}
       <section className="flex flex-col md:flex-row md:justify-between">
         <article
-          className="w-full h-fit
+          className="w-full h-fit mr-5
             flex flex-col gap-6 text-black/70"
         >
           <h1 className="text-2xl md:text-4xl">{title}</h1>

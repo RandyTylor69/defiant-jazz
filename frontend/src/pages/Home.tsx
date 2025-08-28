@@ -1,6 +1,6 @@
 import { currPlaying, myPalette } from "../data";
 import { FiArrowUpRight } from "react-icons/fi";
-
+import { useLayout } from "../components/Layout.tsx";
 // firebase
 import {
   doSignInWithEmailAndPassword,
@@ -17,8 +17,7 @@ export default function Home() {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   // the useAuth() hook contains the user's logged in status.
-  const { userLoggedIn} = useAuth();
-
+  const { userLoggedIn } = useAuth();
   // temp f() for palette
   function isEven(num: number) {
     return num % 2 === 0;
@@ -30,12 +29,16 @@ export default function Home() {
     password: string
   ): Promise<void> {
     e.preventDefault();
-    await doSignInWithEmailAndPassword(email, password);
+    const result = await doSignInWithEmailAndPassword(email, password);
+    if (!result) return;
+    //setUid(result.user.uid);
   }
 
   async function signInWithGoogle(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    doSignInWithGoogle();
+    const result = await doSignInWithGoogle();
+    if (!result) return;
+    //setUid(result.user.uid);
   }
 
   async function register(
@@ -44,7 +47,9 @@ export default function Home() {
     password: string
   ): Promise<void> {
     e.preventDefault();
-    await doCreateUserWithEmailAndPassword(email, password);
+    const result = await doCreateUserWithEmailAndPassword(email, password);
+    if (!result) return;
+    //setUid(result.user.uid);
   }
 
   const currPlayingMapped = currPlaying.map((p) => {
