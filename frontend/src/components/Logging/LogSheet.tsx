@@ -1,6 +1,6 @@
 import { RxCross1 } from "react-icons/rx";
 import { FaSearch } from "react-icons/fa";
-import { useLayout } from "./Layout.tsx";
+import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
 
 type SearchResultType = {
@@ -16,7 +16,8 @@ export default function LogSheet() {
   const [searchParams, setSearchParams] = useState("");
   const [results, setResults] = useState<SearchResultType[] | null>(null);
 
-  const { setIsLogging, setIsLoggingDetail, setLogTarget, slugify } = useLayout();
+  const { setIsLogging, setIsLoggingDetail, setLogTarget, slugify } =
+    useLayout();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,9 +39,6 @@ export default function LogSheet() {
     }
     fetchData();
   }, [searchParams]);
-
-
-
 
   return (
     <div className="inset-0 absolute bg-black/80 backdrop-blur-md z-[999] ">
@@ -90,7 +88,7 @@ export default function LogSheet() {
                 ? result.title.split("(")[1].split(")")[0].trim()
                 : "";
               const title = result.title.split("(")[0].trim();
-              const sheetId = slugify(result.title)
+              const sheetId = slugify(result.title);
               return (
                 <li
                   className="hover:bg-black/30 duration-200 cursor-pointer px-2 py-1"
@@ -114,7 +112,4 @@ export default function LogSheet() {
       </div>
     </div>
   );
-
 }
-
-

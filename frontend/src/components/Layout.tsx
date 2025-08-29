@@ -1,17 +1,20 @@
 import { Outlet } from "react-router-dom";
 import Header from "./Header.tsx";
 import { useState, createContext, useContext } from "react";
-import LogSheet from "./LogSheet.tsx";
-import LogSheetDetail from "./LogSheetDetail.tsx";
+import LogSheet from "./Logging/LogSheet.tsx";
+import LogSheetDetail from "./Logging/LogSheetDetail.tsx";
 import { getAuth } from "firebase/auth";
+import LogFinish from "./Logging/LogFinish.tsx";
 
 type LayoutContextType = {
   setIsLogging: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoggingDetail: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLoggingFinished: React.Dispatch<React.SetStateAction<boolean>>;
+  isLoggingFinished: boolean;
   logTarget: LogTargetType;
   setLogTarget: React.Dispatch<React.SetStateAction<LogTargetType>>;
   uid: string | undefined;
-  slugify:(fullName:string) => string;
+  slugify: (fullName: string) => string;
 };
 
 type LogTargetType = {
@@ -26,27 +29,37 @@ const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 export default function Layout() {
   const [isLogging, setIsLogging] = useState(false);
   const [isLoggingDetail, setIsLoggingDetail] = useState(false);
+  const [isLoggingFinished, setIsLoggingFinished] = useState(false);
   const auth = getAuth();
-  const uid = auth.currentUser?.uid
+  const uid = auth.currentUser?.uid;
   const [logTarget, setLogTarget] = useState<LogTargetType>({
     // this is the sheet that the user wants to log.
     fullName: null,
     title: null,
     composer: null,
-    sheetId: null
+    sheetId: null,
   });
   return (
     <LayoutContext.Provider
-      value={{ setIsLogging, setIsLoggingDetail, logTarget, setLogTarget, slugify, uid }}
+      value={{
+        setIsLogging,
+        setIsLoggingDetail,
+        setIsLoggingFinished,
+        isLoggingFinished,
+        logTarget,
+        setLogTarget,
+        slugify,
+        uid,
+      }}
     >
       {isLogging && <LogSheet />}
       {isLoggingDetail && <LogSheetDetail />}
+      {isLoggingFinished && <LogFinish />}
 
       <div
-        className="min-h-screen h-fit bg-primary font-HKGrotesk
-    p-4 
-    flex flex-col justifty-center items-center gap-6 md:gap-40
-    "
+        className="min-h-screen h-fit bg-primary font-HKGrotesk p-4 
+        flex flex-col justifty-center items-center gap-6 md:gap-40
+        "
       >
         <Header />
 
@@ -70,10 +83,10 @@ export function useLayout() {
 }
 
 // a function that turns a sheet's full name into URL-friendly slug strings.
- function slugify(fullName: string):string {
-    return fullName
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")  // remove special chars
-      .replace(/\s+/g, "-")          // replace spaces with dashes
-      .replace(/-+/g, "-");          // remove repeated dashes
-  }
+function slugify(fullName: string): string {
+  return fullName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "") // remove special chars
+    .replace(/\s+/g, "-") // replace spaces with dashes
+    .replace(/-+/g, "-"); // remove repeated dashes
+}

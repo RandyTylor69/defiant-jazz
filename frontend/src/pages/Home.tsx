@@ -1,6 +1,5 @@
 import { currPlaying, myPalette } from "../data";
 import { FiArrowUpRight } from "react-icons/fi";
-import { useLayout } from "../components/Layout.tsx";
 // firebase
 import {
   doSignInWithEmailAndPassword,

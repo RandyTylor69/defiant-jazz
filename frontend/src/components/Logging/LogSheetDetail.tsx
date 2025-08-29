@@ -1,11 +1,11 @@
 import { RxCross1 } from "react-icons/rx";
 import { TfiAngleLeft } from "react-icons/tfi";
-import { useLayout } from "./Layout.tsx";
+import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
-import { addReviewToDB } from "../firebase/database.ts";
+import { addReviewToDB } from "../../firebase/database.ts";
 
 export default function LogSheetDetail() {
-  const { setIsLogging, setIsLoggingDetail, logTarget, setLogTarget, uid } =
+  const { setIsLogging, setIsLoggingDetail, setIsLoggingFinished, logTarget, setLogTarget, uid } =
     useLayout();
   // logTarget contains: fullName, title, composer.
   const [ratingBg, setRatingBg] = useState([
@@ -27,7 +27,7 @@ export default function LogSheetDetail() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if(!uid)return;
+    if (!uid) return;
     addReviewToDB({
       fullName: logTarget.fullName,
       title: logTarget.title,
@@ -39,6 +39,14 @@ export default function LogSheetDetail() {
       uid: uid,
     });
   }
+
+  // nullify the button for testing purposes.
+  function temp(){
+    setIsLoggingDetail(false)
+    setIsLoggingFinished(true)
+  }
+
+  
 
   // -------------- RATING MECHANICS -------------------
   function toggleRating(toggleID: number) {

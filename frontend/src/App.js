@@ -14,7 +14,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="search/:params" element={<Search />} />
-          <Route path="sheet/:sluggedFullName" element={<Sheet />} />
+          <Route path="sheet/:sheetId" element={<Sheet />} />
           <Route path=":displayName" element={<Profile />} />
 
           <Route path="community">
