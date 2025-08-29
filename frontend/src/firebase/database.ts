@@ -1,5 +1,5 @@
 import { db } from "./firebaseConfig";
-import { collection, addDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 export type ReviewType = {
   fullName: string | null;
@@ -58,4 +58,9 @@ export async function addReviewToDB(review: ReviewType) {
   );
 
   console.log(reviewRef);
+}
+
+export async function updateReview(reviewId:string, updatedReview:ReviewType){
+  const reviewRef = doc(db, "reviews", reviewId)
+  await updateDoc(reviewRef, updatedReview)
 }

@@ -5,12 +5,17 @@ import LogSheet from "./Logging/LogSheet.tsx";
 import LogSheetDetail from "./Logging/LogSheetDetail.tsx";
 import { getAuth } from "firebase/auth";
 import LogFinish from "./Logging/LogFinish.tsx";
+import EditLogSheetDetail from "./Logging/EditLogSheetDetail.tsx"
+import EditLogFinish from "./Logging/EditLogFinish.tsx"
 
 type LayoutContextType = {
   setIsLogging: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoggingDetail: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoggingFinished: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsEditingLogDetail: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsEditingLogFinished: React.Dispatch<React.SetStateAction<boolean>>;
   isLoggingFinished: boolean;
+  isEditingLogFinished: boolean;
   logTarget: LogTargetType;
   setLogTarget: React.Dispatch<React.SetStateAction<LogTargetType>>;
   uid: string | undefined;
@@ -30,6 +35,8 @@ export default function Layout() {
   const [isLogging, setIsLogging] = useState(false);
   const [isLoggingDetail, setIsLoggingDetail] = useState(false);
   const [isLoggingFinished, setIsLoggingFinished] = useState(false);
+  const [isEditingLogDetail, setIsEditingLogDetail ] = useState(false);
+  const [isEditingLogFinished, setIsEditingLogFinished] = useState(false)
   const auth = getAuth();
   const uid = auth.currentUser?.uid;
   const [logTarget, setLogTarget] = useState<LogTargetType>({
@@ -45,7 +52,10 @@ export default function Layout() {
         setIsLogging,
         setIsLoggingDetail,
         setIsLoggingFinished,
+        setIsEditingLogDetail,
+        setIsEditingLogFinished,
         isLoggingFinished,
+        isEditingLogFinished,
         logTarget,
         setLogTarget,
         slugify,
@@ -55,6 +65,8 @@ export default function Layout() {
       {isLogging && <LogSheet />}
       {isLoggingDetail && <LogSheetDetail />}
       {isLoggingFinished && <LogFinish />}
+      {isEditingLogDetail && <EditLogSheetDetail/>}
+      {isEditingLogFinished && <EditLogFinish/>}
 
       <div
         className="min-h-screen h-fit bg-primary font-HKGrotesk p-4 

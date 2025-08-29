@@ -1,12 +1,14 @@
 // contains all the auth functions
 
 import { auth } from "./firebaseConfig";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+
 
 export async function doCreateUserWithEmailAndPassword(
   email: string,

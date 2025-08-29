@@ -1,20 +1,14 @@
-// when the user is logging a NEW review
-
 import { RxCross1 } from "react-icons/rx";
 import { TfiAngleLeft } from "react-icons/tfi";
 import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
-import { addReviewToDB } from "../../firebase/database.ts";
+import { updateReview } from "../../firebase/database.ts";
+import { query, collection, getDocs, where } from "firebase/firestore";
+import { db } from "../../firebase/firebaseConfig.js";
 
-export default function LogSheetDetail() {
-  const {
-    setIsLogging,
-    setIsLoggingDetail,
-    setIsLoggingFinished,
-    logTarget,
-    setLogTarget,
-    uid,
-  } = useLayout();
+export default function EditLogSheetDetail() {
+  const { setIsLoggingFinished, setIsEditingLogDetail, logTarget, uid , setIsEditingLogFinished} =
+    useLayout();
 
   // logTarget contains: fullName, title, composer.
   const [ratingBg, setRatingBg] = useState([
@@ -33,17 +27,45 @@ export default function LogSheetDetail() {
   const [rating, setRating] = useState<number>(0);
   const [content, setContent] = useState<string>("");
   const [practicedSince, setPracticedSince] = useState<string>("");
+  const [reviewId, setReviewId] = useState("");
 
-  // Checks if the user is logging a new review or editing an old review.
+  // Fetch for user's review + rating from db
+  useEffect(() => {
+    async function fetchUserReview() {
+      const reviewQuery = query(
+        // location: fetching from the "reviews" collection
+        collection(db, "reviews"),
+        // fetch the review from the user
+        where("uid", "==", uid),
+        where("sheetId", "==", logTarget.sheetId)
+      );
 
-  useEffect(()=>{
+      const reviewSnapshot = await getDocs(reviewQuery);
 
-  },[])
+      reviewSnapshot.forEach((review) => {
+        // console.log(review.id);
+        setReviewId(review.id);
+        setPracticedSince(review.data().practicedSince);
+        setContent(review.data().content);
+        setRating(review.data().rating);
+        setRatingBg((prev) => {
+          return prev.map((i) => ({
+            ...i,
+            on: i.id < review.data().rating * 2 ? true : false,
+          }));
+        });
+      });
+    }
+
+    fetchUserReview();
+  }, []);
+
+  // ---------------- submit form ---------------------------------
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!uid) return;
-    addReviewToDB({
+    updateReview(reviewId, {
       fullName: logTarget.fullName,
       title: logTarget.title,
       composer: logTarget.composer,
@@ -53,16 +75,14 @@ export default function LogSheetDetail() {
       sheetId: logTarget.sheetId,
       uid: uid,
     });
-    setIsLoggingDetail(false);
-    setIsLoggingFinished(true);
+    setIsEditingLogDetail(false);
+    setIsEditingLogFinished(true)
   }
-
 
   // -------------- RATING MECHANICS -------------------
   function toggleRating(toggleID: number) {
     // Click on a half-star. All its previous ones (include itself) should light up.
     // All its preceding ones should dim out.
-
     setRatingBg((prev) => {
       const ratingNum = (toggleID + 1) / 2;
       setRating(ratingNum);
@@ -88,33 +108,16 @@ export default function LogSheetDetail() {
                 flex flex-col justify-center items-center gap-6
                 top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%]"
       >
-        <section className="w-full flex justify-between text-black/40 ">
-          <h2
-            className=" cursor-pointer"
-            onClick={() => {
-              setIsLoggingDetail(false);
-              setIsLogging(true);
-              setLogTarget({
-                fullName: null,
-                title: null,
-                composer: null,
-                sheetId: null,
-              });
-            }}
-          >
-            <TfiAngleLeft />
-          </h2>
-          <h2
-            className=" cursor-pointer"
-            onClick={() => {
-              setIsLoggingDetail(false);
-              setIsLogging(false);
-            }}
-          >
-            <RxCross1 />
-          </h2>
-        </section>
-        <section className="w-full h-full flex flex-col gap-4">
+        <h2
+          className="absolute right-4 top-4 cursor-pointer text-black/40 "
+          onClick={() => {
+            setIsEditingLogDetail(false);
+          }}
+        >
+          <RxCross1 />
+        </h2>
+
+        <section className="w-full h-full flex flex-col gap-4 mt-4">
           <div className="w-full flex flex-col">
             <h1 className="text-2xl font-serif">{logTarget.title}</h1>
             <h2 className="text-black/30 italic">{logTarget.composer}</h2>
@@ -153,7 +156,7 @@ export default function LogSheetDetail() {
                 className="absolute w-[7rem] object-cover top-6 pointer-events-none"
               />
               <button className="absolute right-0 top-4 btn-primary !px-3 !py-1">
-                Log
+                Update
               </button>
             </div>
           </form>

@@ -5,10 +5,8 @@ import { useEffect, useState } from "react";
 
 export default function LogFinish() {
   const {
-    setIsLoggingDetail,
-    setIsLoggingFinished,
+    setIsEditingLogFinished,
     logTarget,
-    isLoggingFinished,
   } = useLayout();
   const [show, setShow] = useState(false);
   useEffect(() => {
@@ -31,15 +29,15 @@ export default function LogFinish() {
           to={`/sheet/${logTarget.sheetId}`}
           className="underline italic"
           state={{ title: logTarget.title, composer: logTarget.composer, sheetId: logTarget.sheetId }}
-          onClick={() => setIsLoggingFinished(false)}
+          onClick={() => setIsEditingLogFinished(false)}
         >
           {logTarget.title}
         </Link>
         {` `}
-        has been added to your history!
+        has been updated from your history!
       </p>
 
-      <button onClick={() => setIsLoggingFinished(false)}>
+      <button onClick={() => setIsEditingLogFinished(false)}>
         <RxCross1 />
       </button>
     </div>
