@@ -11,6 +11,7 @@ export default function Profile() {
   }
 
 // temp function that console logs all the reviews
+
   useEffect(() => {
     async function getReviewsByUser() {
       

@@ -60,7 +60,7 @@ export async function addReviewToDB(review: ReviewType) {
   console.log(reviewRef);
 }
 
-export async function updateReview(reviewId:string, updatedReview:ReviewType){
+export async function updateReview(reviewId:string, updatedReview:Partial<ReviewType>){
   const reviewRef = doc(db, "reviews", reviewId)
   await updateDoc(reviewRef, updatedReview)
 }

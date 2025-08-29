@@ -64,6 +64,7 @@ export default function Search() {
             const sheetId = slugify(item.title);
             return (
               <Link
+              key={sheetId}
                 to={`/sheet/${sheetId}`}
                 state={{ title, composer, sheetId }}
                 onClick={() =>

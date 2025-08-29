@@ -5,12 +5,14 @@ import {
   doSignInWithEmailAndPassword,
   doSignInWithGoogle,
   doCreateUserWithEmailAndPassword,
+  createUserDoc,
 } from "../firebase/auth.ts";
 
 import { useAuth } from "../components/AuthProvider.tsx";
 import { useState } from "react";
 import SignIn from "../components/SignIn.tsx";
 import Register from "../components/Register.tsx";
+import { checkPrimeSync } from "crypto";
 
 export default function Home() {
   const [isSigningIn, setIsSigningIn] = useState(false);
@@ -36,8 +38,16 @@ export default function Home() {
   async function signInWithGoogle(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const result = await doSignInWithGoogle();
+
     if (!result) return;
-    //setUid(result.user.uid);
+    console.log(result.user);
+
+    createUserDoc({
+      uid: result.user.uid,
+      email: result.user.email as string, // need "as string" because firebase sets email as "string | null"
+      displayName: result.user.displayName,
+      photoURL: result.user.photoURL,
+    });
   }
 
   async function register(
@@ -47,6 +57,7 @@ export default function Home() {
   ): Promise<void> {
     e.preventDefault();
     const result = await doCreateUserWithEmailAndPassword(email, password);
+
     if (!result) return;
     //setUid(result.user.uid);
   }
