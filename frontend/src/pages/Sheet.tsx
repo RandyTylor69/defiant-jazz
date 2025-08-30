@@ -5,6 +5,7 @@ import { db } from "../firebase/firebaseConfig";
 import { useLayout } from "../components/Layout.tsx";
 import { updateReview } from "../firebase/database.ts";
 import { ReviewType } from "../firebase/database.ts";
+import { FaRegUserCircle } from "react-icons/fa";
 
 export default function Sheet() {
   const location = useLocation();
@@ -12,8 +13,6 @@ export default function Sheet() {
   const { title, composer } = location.state;
   const { uid, setIsEditingLogDetail, setIsLoggingDetail, setLogTarget } =
     useLayout();
-
-  // FINAL STATES
   const [hasReviewed, setHasReviewed] = useState(false);
   const [reviewId, setReviewId] = useState("");
   const [reviews, setReviews] = useState<ReviewType[]>([]);
@@ -35,13 +34,12 @@ export default function Sheet() {
     //
     // This hook contains 3 functions.
     //
-    // ---> 1. Fetch review from the user.
+    // ---> 1. Fetch review from the current user.
     // ---> 2. Fetch all reviews for this sheet.
     // ---> 3. Set logging target for this sheet.
     // ___________________________________________
 
     async function fetchUserReview() {
-      
       const reviewQuery = query(
         // location: fetching from the "reviews" collection
         collection(db, "reviews"),
@@ -86,14 +84,13 @@ export default function Sheet() {
       }
     }
 
-    if(uid)fetchUserReview();
+    if (uid) fetchUserReview();
     fetchAllReviews();
 
     // set logTarget's sheetId field when the window reloads.
     // else react will forget what logTarget has.
     if (!sheetId) return;
     setLogTarget((prev) => ({ ...prev, sheetId, title, composer }));
-
   }, []);
 
   function toggleRating(toggleID: number) {
@@ -111,8 +108,6 @@ export default function Sheet() {
     }
   }
 
-  
-
   const ratingBgMapped = ratingBg.map((item) => (
     <div
       key={item.id}
@@ -123,6 +118,8 @@ export default function Sheet() {
       }}
     ></div>
   ));
+
+  console.log(reviews[0]);
 
   return (
     <div
@@ -153,9 +150,9 @@ export default function Sheet() {
               {hasReviewed ? "Edit your activity" : "Review or log..."}
             </button>
           </div>
-          {/**  ============ User Activity ======= */}
+          {/**  ----- rating stars ------- */}
           <div className="relative flex justify-center items-center">
-            <div className="absolute w-[12rem] h-[2.3rem] top-2 flex flex-row ">
+            <div className="absolute w-[12rem] h-[2.2rem] top-2 flex flex-row ">
               {ratingBgMapped}
             </div>
             <img
@@ -182,22 +179,46 @@ export default function Sheet() {
             {`)`}
           </h1>
         </div>
-        <ul className="w-full h-fit bg-green-300">
+        <ul className="w-full h-fit flex flex-col gap-4 ">
           {reviews.map((review) => {
-            // Since each "review" document doesn't contain the user's name (only uid),
-            // we need to fetch the username. 
-              async function fetchUserInfoForReview(){
-                const userQuery = query(
-                  collection(db, "users")
-                )
-              }
-
             return (
               <li
                 className="w-full h-fit
-            flex gap-2"
+            flex flex-col md:flex-row gap-6
+             pb-4"
+                key={review.uid}
               >
-                <div></div>
+                {/** --- div with user info --- */}
+                <div
+                  className="w-full md:max-w-[5rem]
+                 flex md:flex-col gap-2 "
+                >
+                  {review.photoURL ? (
+                    <img
+                      className="size-12 object-cover rounded-[50%]"
+                      src={`${review.photoURL}`}
+                      alt="user profile picture"
+                    />
+                  ) : (
+                    <div>
+                      <FaRegUserCircle  className="size-10 text-black/70"/>
+                    </div>
+                  )}
+                  <p className="text-sm text-black/70 ">{review.displayName ? review.displayName : "Anonymous"}</p>
+                </div>
+                {/** --- div with comment --- */}
+                <article
+                  className="w-full fit gap-2
+                flex flex-col justify-between "
+                >
+                  <div className="w-full flex justify-between text-black/30 text-sm">
+                    <p>{review.rating}/5</p>
+                    <p>{review.creationDate?.slice(0, -14)}</p>
+                  </div>
+                  <p className="text-black/70 border-black/10 border-b-2 pb-4">
+                    {review.content}
+                  </p>
+                </article>
               </li>
             );
           })}

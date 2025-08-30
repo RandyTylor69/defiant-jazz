@@ -24,6 +24,8 @@ export default function Profile() {
 
       const reviewsSnapshot = await getDocs(reviewsQuery);
 
+      if(reviewsSnapshot.empty) return;
+
       reviewsSnapshot.forEach((review) => {
         console.log(review.data());
       });

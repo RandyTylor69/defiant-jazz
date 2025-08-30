@@ -66,14 +66,9 @@ export default function EditLogSheetDetail() {
     e.preventDefault();
     if (!uid) return;
     updateReview(reviewId, {
-      fullName: logTarget.fullName,
-      title: logTarget.title,
-      composer: logTarget.composer,
       practicedSince: practicedSince,
       rating: rating,
       content: content,
-      sheetId: logTarget.sheetId,
-      uid: uid,
     });
     setIsEditingLogDetail(false);
     setIsEditingLogFinished(true)

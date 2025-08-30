@@ -44,6 +44,7 @@ export default function Register({ register, setIsRegistering, signInWithGoogle 
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          minLength={8}
         />
         <button type="submit" className="btn-secondary mt-2 w-full">
           Register

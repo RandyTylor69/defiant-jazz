@@ -11,6 +11,9 @@ export type ReviewType = {
   // database related stats
   sheetId: string | null; // full name of the sheet music but slugged
   uid: string; // UID provided when the user logs in
+  displayName: string;
+  photoURL: string | null | undefined;
+  creationDate?: string;
 };
 export async function addReviewToDB(review: ReviewType) {
   // 1. Checks if the sheet that the user is reviewing exits
@@ -46,6 +49,8 @@ export async function addReviewToDB(review: ReviewType) {
     sheetId: review.sheetId, // the slug id.
     uid: review.uid,
     creationDate: new Date().toISOString(),
+    displayName: review.displayName,
+    photoURL: review.photoURL
   });
 
   // 4. Increment the review count of the sheet.

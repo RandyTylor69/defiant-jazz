@@ -14,6 +14,8 @@ export default function LogSheetDetail() {
     logTarget,
     setLogTarget,
     uid,
+    displayName,
+    photoURL
   } = useLayout();
 
   // logTarget contains: fullName, title, composer.
@@ -52,6 +54,8 @@ export default function LogSheetDetail() {
       content: content,
       sheetId: logTarget.sheetId,
       uid: uid,
+      displayName:displayName,
+      photoURL:photoURL
     });
     setIsLoggingDetail(false);
     setIsLoggingFinished(true);

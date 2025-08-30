@@ -19,6 +19,8 @@ type LayoutContextType = {
   logTarget: LogTargetType;
   setLogTarget: React.Dispatch<React.SetStateAction<LogTargetType>>;
   uid: string | undefined;
+  displayName: string;
+  photoURL: string | null;
   slugify: (fullName: string) => string;
 };
 
@@ -39,6 +41,8 @@ export default function Layout() {
   const [isEditingLogFinished, setIsEditingLogFinished] = useState(false)
   const auth = getAuth();
   const uid = auth.currentUser?.uid;
+  const displayName = auth.currentUser?.displayName;
+  const photoURL = auth.currentUser?.photoURL
   const [logTarget, setLogTarget] = useState<LogTargetType>({
     // this is the sheet that the user wants to log.
     fullName: null,
@@ -60,6 +64,8 @@ export default function Layout() {
         setLogTarget,
         slugify,
         uid,
+        displayName : displayName || "",
+        photoURL: photoURL || ""
       }}
     >
       {isLogging && <LogSheet />}

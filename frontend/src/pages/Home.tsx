@@ -56,10 +56,16 @@ export default function Home() {
     password: string
   ): Promise<void> {
     e.preventDefault();
+
     const result = await doCreateUserWithEmailAndPassword(email, password);
 
     if (!result) return;
-    //setUid(result.user.uid);
+    createUserDoc({
+      uid: result.user.uid,
+      email: result.user.email as string, // need "as string" because firebase sets email as "string | null"
+      displayName: result.user.displayName,
+      photoURL: result.user.photoURL,
+    });
   }
 
   const currPlayingMapped = currPlaying.map((p) => {
