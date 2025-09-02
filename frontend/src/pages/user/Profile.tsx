@@ -40,6 +40,8 @@ export default function Profile() {
     fetchSheets();
   }, []);
 
+  console.log(photoURL)
+
   return (
     <div className="flex flex-col w-full justify-center items-center text-black/70 gap-16 pt-8 md:pt-0">
       {/** ========== USER DESCRIPTION ========== */}
@@ -59,7 +61,7 @@ export default function Profile() {
                 className="rounded-[50%]"
               />
             ) : (
-              <div className="w-full bg-secondary"></div>
+              <div className="w-full h-full bg-secondary"></div>
             )}
           </div>
 

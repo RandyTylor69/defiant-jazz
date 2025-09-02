@@ -6,11 +6,12 @@
 @layer components {
   .btn-primary {
     @apply bg-black text-primary border-2 border-black text-sm md:text-[1rem]
-        px-2 py-1 rounded-[2rem] duration-300;
+        px-2 py-1 rounded-[2rem] duration-300 cursor-pointer;
   }
   .btn-secondary {
     @apply bg-primary text-black/70 border-2 border-black/20  text-sm
         px-2 py-1 rounded-[2rem] 
+        cursor-pointer
         hover:bg-secondary hover:border-2 hover:text-black duration-300;
   }
   .btn-tertiary {
@@ -31,6 +32,15 @@
     @apply w-full p-2 outline-none text-sm h-[5rem] focus:h-[10rem] transition-height duration-300 ease-in-out
     placeholder-black/20 
     
+  }
+
+  .small-titletext-uppercase {
+    @apply text-sm font-light border-b-[1px] border-black/20 text-black/40 uppercase
+  }
+
+   .general-text-input {
+    @apply outline-none text-black/70 p-2 h-full text-sm
+    w-full placeholder-black/20 ;
   }
 }
 

@@ -9,11 +9,13 @@ import EditLogSheetDetail from "./Logging/EditLogSheetDetail.tsx";
 import EditLogFinish from "./Logging/EditLogFinish.tsx";
 // importing types and util functions
 import { LayoutContextType, LogTargetType } from "../types.ts";
+import LogSheetProfile from "./Logging/LogSheetProfile.tsx";
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
 export default function Layout() {
   const [isLogging, setIsLogging] = useState(false);
+  const [isLoggingProfile, setIsLoggingProfile] = useState(false)
   const [isLoggingDetail, setIsLoggingDetail] = useState(false);
   const [isLoggingFinished, setIsLoggingFinished] = useState(false);
   const [isEditingLogDetail, setIsEditingLogDetail] = useState(false);
@@ -49,6 +51,7 @@ export default function Layout() {
         isLoggedIn
       }}
     >
+      
       {isLogging && <LogSheet />}
       {isLoggingDetail && <LogSheetDetail />}
       {isLoggingFinished && <LogFinish />}

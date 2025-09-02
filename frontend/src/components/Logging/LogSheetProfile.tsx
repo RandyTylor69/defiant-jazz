@@ -1,5 +1,5 @@
-// this is the prompt that asks user what sheet they'd like to log.
-// it leads them to the "LogSheetDetail.tsx"
+// this is the prompt that asks user what sheet they'd like to add to their
+// favourite / currently practicing.
 
 import { RxCross1 } from "react-icons/rx";
 import { FaSearch } from "react-icons/fa";
@@ -16,11 +16,20 @@ type SearchResultType = {
   wordcount: number;
 };
 
-export default function LogSheet() {
+export default function LogSheetProfile({
+  setIsLoggingProfile,
+  isLoggingFavourite,
+  setIsLoggingFavourite,
+  setFavouritePiece,
+  isLoggingCurrentlyPracticing,
+  setIsLoggingCurrentlyPracticing,
+  setCurrentlyPracticingSheetIds,
+  setCurrentlyPracticing,
+}) {
   const [searchParams, setSearchParams] = useState("");
   const [results, setResults] = useState<SearchResultType[] | null>(null);
 
-  const { setIsLogging, setIsLoggingDetail, setLogTarget } = useLayout();
+  const { setLogTarget, logTarget } = useLayout();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -58,7 +67,7 @@ export default function LogSheet() {
           </h1>
           <h2
             className="absolute top-4 right-4 text-black/40 cursor-pointer"
-            onClick={() => setIsLogging(false)}
+            onClick={() => setIsLoggingProfile(false)}
           >
             <RxCross1 />
           </h2>
@@ -96,14 +105,43 @@ export default function LogSheet() {
                 <li
                   className="hover:bg-black/30 duration-200 cursor-pointer px-2 py-1"
                   onClick={() => {
-                    setIsLogging(false);
-                    setIsLoggingDetail(true);
-                    setLogTarget({
+                    const newTarget = {
                       fullName: result.title,
                       title: title,
                       composer: composer,
                       sheetId: sheetId,
-                    });
+                    };
+
+                    const clonedLogTarget = structuredClone(newTarget);
+                    // self-explainatory
+                    if (isLoggingFavourite) {
+                      setFavouritePiece(clonedLogTarget);
+                      console.log(
+                        "Adding the following piece to the favourite piece state:",
+                        clonedLogTarget
+                      );
+                      
+                    }
+
+                    // self-explainatory
+                    if (isLoggingCurrentlyPracticing) {
+                      setCurrentlyPracticing((prev: any) => [
+                        ...prev,
+                        clonedLogTarget,
+                      ]);
+                      setCurrentlyPracticingSheetIds((prev:any) =>[
+                        ...prev,
+                        clonedLogTarget.sheetId
+                      ])
+                      console.log(
+                        "Adding the following piece to the currently practicing state:",
+                        clonedLogTarget
+                      );
+                    
+                    }
+                    setIsLoggingFavourite(false);
+                    setIsLoggingCurrentlyPracticing(false)
+                    setIsLoggingProfile(false);
                   }}
                 >
                   {title},{" "}
