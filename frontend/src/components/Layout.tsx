@@ -5,31 +5,10 @@ import LogSheet from "./Logging/LogSheet.tsx";
 import LogSheetDetail from "./Logging/LogSheetDetail.tsx";
 import { getAuth } from "firebase/auth";
 import LogFinish from "./Logging/LogFinish.tsx";
-import EditLogSheetDetail from "./Logging/EditLogSheetDetail.tsx"
-import EditLogFinish from "./Logging/EditLogFinish.tsx"
-
-type LayoutContextType = {
-  setIsLogging: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsLoggingDetail: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsLoggingFinished: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsEditingLogDetail: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsEditingLogFinished: React.Dispatch<React.SetStateAction<boolean>>;
-  isLoggingFinished: boolean;
-  isEditingLogFinished: boolean;
-  logTarget: LogTargetType;
-  setLogTarget: React.Dispatch<React.SetStateAction<LogTargetType>>;
-  uid: string | undefined;
-  displayName: string;
-  photoURL: string | null;
-  slugify: (fullName: string) => string;
-};
-
-type LogTargetType = {
-  fullName: string | null;
-  title: string | null;
-  composer: string | null;
-  sheetId: string | null;
-};
+import EditLogSheetDetail from "./Logging/EditLogSheetDetail.tsx";
+import EditLogFinish from "./Logging/EditLogFinish.tsx";
+// importing types and util functions
+import { LayoutContextType, LogTargetType } from "../types.ts";
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
@@ -37,12 +16,14 @@ export default function Layout() {
   const [isLogging, setIsLogging] = useState(false);
   const [isLoggingDetail, setIsLoggingDetail] = useState(false);
   const [isLoggingFinished, setIsLoggingFinished] = useState(false);
-  const [isEditingLogDetail, setIsEditingLogDetail ] = useState(false);
-  const [isEditingLogFinished, setIsEditingLogFinished] = useState(false)
+  const [isEditingLogDetail, setIsEditingLogDetail] = useState(false);
+  const [isEditingLogFinished, setIsEditingLogFinished] = useState(false);
   const auth = getAuth();
+  // getting fields of the auth object;
+  const isLoggedIn = auth.currentUser;
   const uid = auth.currentUser?.uid;
   const displayName = auth.currentUser?.displayName;
-  const photoURL = auth.currentUser?.photoURL
+  const photoURL = auth.currentUser?.photoURL;
   const [logTarget, setLogTarget] = useState<LogTargetType>({
     // this is the sheet that the user wants to log.
     fullName: null,
@@ -62,17 +43,17 @@ export default function Layout() {
         isEditingLogFinished,
         logTarget,
         setLogTarget,
-        slugify,
         uid,
-        displayName : displayName || "",
-        photoURL: photoURL || ""
+        displayName: displayName || "",
+        photoURL: photoURL || "",
+        isLoggedIn
       }}
     >
       {isLogging && <LogSheet />}
       {isLoggingDetail && <LogSheetDetail />}
       {isLoggingFinished && <LogFinish />}
-      {isEditingLogDetail && <EditLogSheetDetail/>}
-      {isEditingLogFinished && <EditLogFinish/>}
+      {isEditingLogDetail && <EditLogSheetDetail />}
+      {isEditingLogFinished && <EditLogFinish />}
 
       <div
         className="min-h-screen h-fit bg-primary font-HKGrotesk p-4 
@@ -98,13 +79,4 @@ export function useLayout() {
   if (!context)
     throw new Error("useLayout must be used within a Layout Provider");
   return context;
-}
-
-// a function that turns a sheet's full name into URL-friendly slug strings.
-function slugify(fullName: string): string {
-  return fullName
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "") // remove special chars
-    .replace(/\s+/g, "-") // replace spaces with dashes
-    .replace(/-+/g, "-"); // remove repeated dashes
 }

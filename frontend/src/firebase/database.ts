@@ -1,21 +1,20 @@
-import { db } from "./firebaseConfig";
-import { collection, addDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { DatabaseSync } from "node:sqlite";
+import { ReviewType } from "../types";
 
-export type ReviewType = {
-  fullName: string | null;
-  title: string | null;
-  composer: string | null;
-  practicedSince: string;
-  rating: number;
-  content: string;
-  // database related stats
-  sheetId: string | null; // full name of the sheet music but slugged
-  uid: string; // UID provided when the user logs in
-  displayName: string;
-  photoURL: string | null | undefined;
-  creationDate?: string;
-};
-export async function addReviewToDB(review: ReviewType) {
+import { db } from "./firebaseConfig";
+import {
+  collection,
+  addDoc,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+
+export async function addReviewToDB(review: ReviewType, uid: string) {
   // 1. Checks if the sheet that the user is reviewing exits
   //    inside Firestore.
   if (!review.sheetId) return;
@@ -50,7 +49,7 @@ export async function addReviewToDB(review: ReviewType) {
     uid: review.uid,
     creationDate: new Date().toISOString(),
     displayName: review.displayName,
-    photoURL: review.photoURL
+    photoURL: review.photoURL,
   });
 
   // 4. Increment the review count of the sheet.
@@ -63,9 +62,54 @@ export async function addReviewToDB(review: ReviewType) {
   );
 
   console.log(reviewRef);
+
+  // 5. Increment the review count of the user.
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+  await setDoc(
+    userRef,
+    {
+      sheetsTotal: userSnap.data()?.sheetsTotal + 1,
+    },
+    { merge: true }
+  );
 }
 
-export async function updateReview(reviewId:string, updatedReview:Partial<ReviewType>){
-  const reviewRef = doc(db, "reviews", reviewId)
-  await updateDoc(reviewRef, updatedReview)
+export async function updateReview(
+  reviewId: string,
+  updatedReview: Partial<ReviewType>
+) {
+  const reviewRef = doc(db, "reviews", reviewId);
+  await updateDoc(reviewRef, updatedReview);
+}
+
+// returns 2 numbers: the 1st is how many sheets the user has reviewed in total, the 2nd is how many they've reviewed this year
+
+export async function getSheets(uid: string) {
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+
+  const sheetsTotalCount = userSnap.data()?.sheetsTotal;
+  
+  // get annual sheets
+  let sheetsAnnualCount = 0;
+  const currYear = new Date().getFullYear();
+
+  const reviewsQuery = query(
+    // location: fetching from the "reviews" collection
+    collection(db, "reviews"),
+    // fetch all reviews.
+    where("uid", "==", uid)
+  );
+
+  const reviewsSnapshot = await getDocs(reviewsQuery);
+
+  reviewsSnapshot.forEach((review) => {
+    const practiedSinceYear = new Date(review.data().practicedSince).getFullYear()
+    if (practiedSinceYear === currYear) {
+      sheetsAnnualCount++;
+    }
+  });
+
+  return { sheetsTotalCount, sheetsAnnualCount };
 }

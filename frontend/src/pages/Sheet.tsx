@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { collection, DocumentData, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useLayout } from "../components/Layout.tsx";
 import { updateReview } from "../firebase/database.ts";
-import { ReviewType } from "../firebase/database.ts";
+import { ReviewType } from "../types.ts";
 import { FaRegUserCircle } from "react-icons/fa";
+
 
 export default function Sheet() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { sheetId } = useParams(); // not passed from state
   const { title, composer } = location.state;
-  const { uid, setIsEditingLogDetail, setIsLoggingDetail, setLogTarget } =
+  const { uid, setIsEditingLogDetail, setIsLoggingDetail, setLogTarget, isLoggedIn } =
     useLayout();
   const [hasReviewed, setHasReviewed] = useState(false);
   const [reviewId, setReviewId] = useState("");
-  const [reviews, setReviews] = useState<ReviewType[]>([]);
+  const [reviews, setReviews] = useState<DocumentData[]>([]);
   const [ratingBg, setRatingBg] = useState([
     { id: 0, on: false },
     { id: 1, on: false },
@@ -40,6 +42,7 @@ export default function Sheet() {
     // ___________________________________________
 
     async function fetchUserReview() {
+
       const reviewQuery = query(
         // location: fetching from the "reviews" collection
         collection(db, "reviews"),
@@ -119,8 +122,6 @@ export default function Sheet() {
     ></div>
   ));
 
-  console.log(reviews[0]);
-
   return (
     <div
       className="w-full h-fit
@@ -142,9 +143,12 @@ export default function Sheet() {
           >
             <button
               onClick={() =>
-                hasReviewed
+                isLoggedIn ? (
+                       hasReviewed
                   ? setIsEditingLogDetail(true)
                   : setIsLoggingDetail(true)
+                ) : navigate("/")
+           
               }
             >
               {hasReviewed ? "Edit your activity" : "Review or log..."}

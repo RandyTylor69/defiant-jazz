@@ -1,7 +1,11 @@
+// this is the prompt that asks user what sheet they'd like to log.
+// it leads them to the "LogSheetDetail.tsx"
+
 import { RxCross1 } from "react-icons/rx";
 import { FaSearch } from "react-icons/fa";
 import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
+import { slugify } from "../../utils.ts";
 
 type SearchResultType = {
   ns: number;
@@ -16,7 +20,7 @@ export default function LogSheet() {
   const [searchParams, setSearchParams] = useState("");
   const [results, setResults] = useState<SearchResultType[] | null>(null);
 
-  const { setIsLogging, setIsLoggingDetail, setLogTarget, slugify } =
+  const { setIsLogging, setIsLoggingDetail, setLogTarget} =
     useLayout();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -50,8 +54,8 @@ export default function LogSheet() {
                 "
       >
         <div className="w-full flex justify-between">
-          <h1 className="uppercase text-sm font-thin italic">
-            Add a sheet music to your repetoire...
+          <h1 className="uppercase font-thin italic text-sm">
+            Log a new sheet music...
           </h1>
           <h2
             className="absolute top-4 right-4 text-black/40 cursor-pointer"
@@ -69,8 +73,8 @@ export default function LogSheet() {
             type="text"
             value={searchParams}
             onChange={(e) => setSearchParams(e.target.value)}
-            className="p-2 outline-none w-full font-thin"
-            placeholder="Remember to include the accent in the title :)"
+            className="p-2 outline-none w-full font-thin "
+            placeholder="Search by title / composer"
             required
           />
           <button type="submit" className="absolute right-2 text-black/20">

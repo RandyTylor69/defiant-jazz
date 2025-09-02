@@ -30,8 +30,15 @@ export default function LogFinish() {
         <Link
           to={`/sheet/${logTarget.sheetId}`}
           className="underline italic"
-          state={{ title: logTarget.title, composer: logTarget.composer, sheetId: logTarget.sheetId }}
-          onClick={() => setIsLoggingFinished(false)}
+          state={{
+            title: logTarget.title,
+            composer: logTarget.composer,
+            sheetId: logTarget.sheetId,
+          }}
+          onClick={() => {
+            setIsLoggingFinished(false);
+            window.location.reload();
+          }}
         >
           {logTarget.title}
         </Link>
@@ -39,7 +46,12 @@ export default function LogFinish() {
         has been added to your history!
       </p>
 
-      <button onClick={() => setIsLoggingFinished(false)}>
+      <button
+        onClick={() => {
+          setIsLoggingFinished(false);
+          window.location.reload();
+        }}
+      >
         <RxCross1 />
       </button>
     </div>

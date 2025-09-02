@@ -1,7 +1,7 @@
 // contains all the auth functions
 
 import { auth, db} from "./firebaseConfig";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, DocumentData } from "firebase/firestore";
 
 import {
   createUserWithEmailAndPassword,
@@ -10,19 +10,15 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 
-export type UserType ={
-  uid: string ;
-  email: string;
-  displayName: string | null;
-  photoURL: string | null;
-}
 
-export async function createUserDoc(user:UserType){
+export async function createUserDoc(user:DocumentData){
   await setDoc(doc(db, "users", user.uid), {
     uid: user.uid,
     email:user.email,
     displayName: user.displayName || "Anonymous",
-    photoURL: user.photoURL || null
+    photoURL: user.photoURL || null,
+    aboutMe: user.aboutMe,
+    sheetsTotal: user.sheetsTotal
   })
 }
 

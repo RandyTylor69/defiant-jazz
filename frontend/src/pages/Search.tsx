@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useLayout } from "../components/Layout.tsx";
-import { FaBuildingFlag } from "react-icons/fa6";
+import { slugify } from "../utils.ts";
 
 type SearchItem = {
   title: string;
@@ -9,11 +9,13 @@ type SearchItem = {
 };
 
 export default function Search() {
+  const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<SearchItem[]>([]);
   const { params } = useParams<{ params: string }>(); // Typing the content of the object returned by useParams()
   const { setLogTarget } = useLayout();
   //const [isSearch, setIsSearching] = useState(false)
   useEffect(() => {
+    setLoading(true)
     async function fetchData() {
       if (!params) return;
       //setIsSearching(true)
@@ -26,20 +28,12 @@ export default function Search() {
 
       data.query.search != null && setResults(data.query.search);
       //setIsSearching(false)
+      setLoading(false)
     }
     fetchData();
   }, []);
 
-  function slugify(fullName: string): string {
-    return fullName
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "") // remove special chars
-      .replace(/\s+/g, "-") // replace spaces with dashes
-      .replace(/-+/g, "-"); // remove repeated dashes
-  }
-
-  // console.log(results)
-
+  if(loading) return <h1>Loading</h1>
   return (
     <div
       className="h-fit w-full

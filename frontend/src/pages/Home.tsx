@@ -12,9 +12,10 @@ import { useAuth } from "../components/AuthProvider.tsx";
 import { useState } from "react";
 import SignIn from "../components/SignIn.tsx";
 import Register from "../components/Register.tsx";
-import { checkPrimeSync } from "crypto";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   // the useAuth() hook contains the user's logged in status.
@@ -33,6 +34,7 @@ export default function Home() {
     const result = await doSignInWithEmailAndPassword(email, password);
     if (!result) return;
     //setUid(result.user.uid);
+    navigate("/");
   }
 
   async function signInWithGoogle(e: React.FormEvent<HTMLFormElement>) {
@@ -47,7 +49,11 @@ export default function Home() {
       email: result.user.email as string, // need "as string" because firebase sets email as "string | null"
       displayName: result.user.displayName,
       photoURL: result.user.photoURL,
+      aboutMe: "",
+      sheetsTotal: 0,
     });
+
+    navigate("/");
   }
 
   async function register(
@@ -65,7 +71,11 @@ export default function Home() {
       email: result.user.email as string, // need "as string" because firebase sets email as "string | null"
       displayName: result.user.displayName,
       photoURL: result.user.photoURL,
+      aboutMe: "",
+      sheetsTotal: 0,
     });
+
+    navigate("/");
   }
 
   const currPlayingMapped = currPlaying.map((p) => {

@@ -5,8 +5,13 @@ import { TfiAngleLeft } from "react-icons/tfi";
 import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
 import { addReviewToDB } from "../../firebase/database.ts";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function LogSheetDetail() {
+  const [isAtSheetPage, setIsAtSheetPage] = useState(false);
+  const navigate = useNavigate()
+  const { sheetId } = useParams();
+
   const {
     setIsLogging,
     setIsLoggingDetail,
@@ -15,7 +20,7 @@ export default function LogSheetDetail() {
     setLogTarget,
     uid,
     displayName,
-    photoURL
+    photoURL,
   } = useLayout();
 
   // logTarget contains: fullName, title, composer.
@@ -38,9 +43,9 @@ export default function LogSheetDetail() {
 
   // Checks if the user is logging a new review or editing an old review.
 
-  useEffect(()=>{
-
-  },[])
+  useEffect(() => {
+    if (sheetId) setIsAtSheetPage(true);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -54,13 +59,12 @@ export default function LogSheetDetail() {
       content: content,
       sheetId: logTarget.sheetId,
       uid: uid,
-      displayName:displayName,
-      photoURL:photoURL
-    });
+      displayName: displayName,
+      photoURL: photoURL,
+    }, uid);
     setIsLoggingDetail(false);
     setIsLoggingFinished(true);
   }
-
 
   // -------------- RATING MECHANICS -------------------
   function toggleRating(toggleID: number) {
@@ -93,21 +97,26 @@ export default function LogSheetDetail() {
                 top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%]"
       >
         <section className="w-full flex justify-between text-black/40 ">
-          <h2
-            className=" cursor-pointer"
-            onClick={() => {
-              setIsLoggingDetail(false);
-              setIsLogging(true);
-              setLogTarget({
-                fullName: null,
-                title: null,
-                composer: null,
-                sheetId: null,
-              });
-            }}
-          >
-            <TfiAngleLeft />
-          </h2>
+          {isAtSheetPage ? (
+            <></>
+          ) : (
+            <h2
+              className=" cursor-pointer"
+              onClick={() => {
+                setIsLoggingDetail(false);
+                setIsLogging(true);
+                setLogTarget({
+                  fullName: null,
+                  title: null,
+                  composer: null,
+                  sheetId: null,
+                });
+              }}
+            >
+              <TfiAngleLeft />
+            </h2>
+          )}
+
           <h2
             className=" cursor-pointer"
             onClick={() => {
