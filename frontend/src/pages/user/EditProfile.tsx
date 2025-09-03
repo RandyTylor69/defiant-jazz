@@ -45,14 +45,25 @@ export default function EditProfile() {
 
     // 1. Add the new profile picture's URL to firebase storage
     if (photoFile) {
-      // upload file to firebase storage
-      const storage = getStorage(); // creates a storage instance
-      const storageRef = ref(storage, `users/${uid}/profile-picture`); // creates a path to the profile
-      await uploadBytes(storageRef, photoFile); // upload the profile to that path
-      const url = await getDownloadURL(storageRef);
-      setNewProfileURL(url);
+      const formData = new FormData();
+      formData.append("file", photoFile); // named it "file"
+
+      const res = await fetch(
+        `${process.env.REACT_APP_SERVER_ROUTE}/api/uploadProfilePicture`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) console.log("Error while uploading file: ", data.error);
+
+      setNewProfileURL(data.url)
     }
 
+    // 2. Updating the user document
     try {
       await updateDoc(doc(db, "users", uid as string), {
         photoURL: newProfileURL ? newProfileURL : null,
@@ -62,6 +73,7 @@ export default function EditProfile() {
         currentlyPracticing: currentlyPracticingSheetIds,
       });
       console.log("successful submit!");
+      
     } catch (err) {
       console.error("error from updating doc: ", err);
     }
@@ -174,7 +186,7 @@ export default function EditProfile() {
               <div className="flex gap-2 items-center font-light text-black/70 font-serif italic underline text-sm">
                 <p>{piece.title}</p>
                 <button
-                type="button"
+                  type="button"
                   onClick={() =>
                     setCurrentlyPracticing((prev) =>
                       prev.filter((i) => i.sheetId != piece.sheetId)
@@ -189,7 +201,7 @@ export default function EditProfile() {
           {/** only render the add button when the list is not full */}
           {currentlyPracticing.length < 4 && (
             <button
-            type="button"
+              type="button"
               className="btn-secondary rounded-[0rem] w-fit"
               onClick={() => {
                 setIsLoggingProfile(true);

@@ -28,3 +28,4 @@ yarn-error.log*
 
 # Ignore the .env files
 **/.env
+*.env
