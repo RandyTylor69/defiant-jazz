@@ -2,7 +2,7 @@ import { useLayout } from "../../components/Layout.tsx";
 import { CgMoreO } from "react-icons/cg";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getSheets } from "../../firebase/database.ts";
+import { getSheets } from "../../utils.ts";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig.js";
 import { LogTargetType, UserType } from "../../types.ts";
@@ -49,7 +49,8 @@ export default function Profile() {
   console.log(userData);
 
   return (
-    <div className="flex flex-col w-full justify-center items-center text-black/70 gap-16 pt-8 md:pt-0">
+    <div className="flex flex-col w-full 
+    justify-center items-center text-black/70 gap-16 pt-8 md:pt-0">
       {/** ========== USER DESCRIPTION ========== */}
 
       <section
@@ -64,7 +65,7 @@ export default function Profile() {
               <img
                 src={userData.photoURL}
                 alt="profile image"
-                className="rounded-[50%]"
+                className="rounded-[50%] h-[6rem] w-[6rem]"
               />
             ) : (
               <div className="w-full h-full bg-secondary"></div>

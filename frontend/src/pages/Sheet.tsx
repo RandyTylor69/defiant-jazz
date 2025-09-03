@@ -3,7 +3,7 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { collection, DocumentData, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useLayout } from "../components/Layout.tsx";
-import { updateReview } from "../firebase/database.ts";
+import { updateReview } from "../utils.ts";
 import { ReviewType } from "../types.ts";
 import { FaRegUserCircle } from "react-icons/fa";
 

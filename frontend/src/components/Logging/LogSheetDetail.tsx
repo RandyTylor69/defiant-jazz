@@ -4,12 +4,12 @@ import { RxCross1 } from "react-icons/rx";
 import { TfiAngleLeft } from "react-icons/tfi";
 import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
-import { addReviewToDB } from "../../firebase/database.ts";
+import { addReviewToDB } from "../../utils.ts";
 import { useParams, useNavigate } from "react-router-dom";
 
 export default function LogSheetDetail() {
   const [isAtSheetPage, setIsAtSheetPage] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { sheetId } = useParams();
 
   const {
@@ -50,18 +50,21 @@ export default function LogSheetDetail() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!uid) return;
-    addReviewToDB({
-      fullName: logTarget.fullName,
-      title: logTarget.title,
-      composer: logTarget.composer,
-      practicedSince: practicedSince,
-      rating: rating,
-      content: content,
-      sheetId: logTarget.sheetId,
-      uid: uid,
-      displayName: displayName,
-      photoURL: photoURL,
-    }, uid);
+    addReviewToDB(
+      {
+        fullName: logTarget.fullName,
+        title: logTarget.title,
+        composer: logTarget.composer,
+        practicedSince: practicedSince,
+        rating: rating,
+        content: content,
+        sheetId: logTarget.sheetId,
+        uid: uid,
+        displayName: displayName,
+        photoURL: photoURL,
+      },
+      uid
+    );
     setIsLoggingDetail(false);
     setIsLoggingFinished(true);
   }

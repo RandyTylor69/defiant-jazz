@@ -2,13 +2,18 @@ import { RxCross1 } from "react-icons/rx";
 import { TfiAngleLeft } from "react-icons/tfi";
 import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
-import { updateReview } from "../../firebase/database.ts";
+import { updateReview } from "../../utils.ts";
 import { query, collection, getDocs, where } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig.js";
 
 export default function EditLogSheetDetail() {
-  const { setIsLoggingFinished, setIsEditingLogDetail, logTarget, uid , setIsEditingLogFinished} =
-    useLayout();
+  const {
+    setIsLoggingFinished,
+    setIsEditingLogDetail,
+    logTarget,
+    uid,
+    setIsEditingLogFinished,
+  } = useLayout();
 
   // logTarget contains: fullName, title, composer.
   const [ratingBg, setRatingBg] = useState([
@@ -71,7 +76,7 @@ export default function EditLogSheetDetail() {
       content: content,
     });
     setIsEditingLogDetail(false);
-    setIsEditingLogFinished(true)
+    setIsEditingLogFinished(true);
   }
 
   // -------------- RATING MECHANICS -------------------

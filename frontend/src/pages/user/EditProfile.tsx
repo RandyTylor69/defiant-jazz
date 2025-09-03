@@ -13,7 +13,6 @@ import { auth, db } from "../../firebase/firebaseConfig.js";
 export default function EditProfile() {
   // either a File type object or null
   const [photoFile, setPhotoFile] = useState<File | undefined>(undefined);
-  const [newProfileURL, setNewProfileURL] = useState<string | null>(null);
   const [newDisplayName, setNewDisplayName] = useState("");
   const [newAboutMe, setNewAboutMe] = useState("");
   // package 1 (for the LogSheetProfile component so it knows which state to put the result)
@@ -28,7 +27,7 @@ export default function EditProfile() {
     LogTargetType[]
   >([]);
   const [isLoggingProfile, setIsLoggingProfile] = useState(false);
-  const { displayName, uid, photoURL } = useLayout();
+  const { uid, photoURL } = useLayout();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,8 +45,6 @@ export default function EditProfile() {
     }
 
     fetchUserInfo()
-
-    setNewDisplayName(displayName);
   }, []);
 
   
@@ -59,6 +56,8 @@ export default function EditProfile() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    let newPhotoURL : string | null = null;
 
     // 1. Add the new profile picture's URL to firebase storage
     if (photoFile) {
@@ -77,22 +76,23 @@ export default function EditProfile() {
 
       if (!res.ok) console.log("Error while uploading file: ", data.error);
 
-      setNewProfileURL(data.url);
+      newPhotoURL = data.url
     }
 
     // 2. Updating the user document
     try {
-      await updateDoc(doc(db, "users", uid as string), {
-        photoURL: newProfileURL ? newProfileURL : photoURL,
+
+       await updateDoc(doc(db, "users", uid as string), {
+        photoURL: newPhotoURL? newPhotoURL : photoURL,
         aboutMe: newAboutMe,
         displayName: newDisplayName,
         favouritePiece: favouritePiece,
         currentlyPracticing: currentlyPracticing
-      });
+      }); 
 
       navigate("..");
       console.log("successful submit!");
-      console.log(auth.currentUser, displayName);
+      
     } catch (err) {
       console.error("error from updating doc: ", err);
     }
@@ -101,7 +101,7 @@ export default function EditProfile() {
     if (auth.currentUser) {
       await updateProfile(auth.currentUser, {
         displayName: newDisplayName,
-        photoURL: newProfileURL ? newProfileURL : photoURL,
+        photoURL: newPhotoURL? newPhotoURL : photoURL,
       });
     }
   }

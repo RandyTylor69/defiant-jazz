@@ -41,6 +41,7 @@ const s3 = new S3Client({
 function randomImageName(bytes = 32) {
   return crypto.randomBytes(bytes).toString("hex");
 }
+
 app.post(
   "/api/uploadProfilePicture",
   upload.single("file"),

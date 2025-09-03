@@ -1,18 +1,16 @@
 import { currPlaying, myPalette } from "../data";
 import { FiArrowUpRight } from "react-icons/fi";
-// firebase
-import {
-  doSignInWithEmailAndPassword,
-  doSignInWithGoogle,
-  doCreateUserWithEmailAndPassword,
-  createUserDoc,
-} from "../firebase/auth.ts";
-
+import { signIn, signInWithGoogle, register } from "../firebase/dbUtils.ts";
 import { useAuth } from "../components/AuthProvider.tsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SignIn from "../components/SignIn.tsx";
 import Register from "../components/Register.tsx";
 import { useNavigate } from "react-router-dom";
+import { useLayout } from "../components/Layout.tsx";
+import { db } from "../firebase/firebaseConfig.js";
+import { doc, getDoc } from "firebase/firestore";
+import { LogTargetType } from "../types.ts";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -20,94 +18,33 @@ export default function Home() {
   const [isRegistering, setIsRegistering] = useState(false);
   // the useAuth() hook contains the user's logged in status.
   const { userLoggedIn } = useAuth();
+  const { uid } = useLayout();
   // temp f() for palette
   function isEven(num: number) {
     return num % 2 === 0;
   }
+  // ---- states for the front page pieces ----- //
+  // --------------------------------------------//
+  const [currPracticing, setCurrPracticing] = useState<LogTargetType[]>([]);
+  const [favouritePiece, setFavouritePiece] = useState<LogTargetType | null>(
+    null
+  );
 
-
-  async function signIn(
-    e: React.FormEvent<HTMLFormElement>,
-    email: string,
-    password: string
-  ): Promise<void> {
-    e.preventDefault();
-    const result = await doSignInWithEmailAndPassword(email, password);
-    if (!result) return;
-    //setUid(result.user.uid);
-    navigate("/");
-  }
-
-  async function signInWithGoogle(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const result = await doSignInWithGoogle();
-
-    if (!result) return;
-    console.log(result.user);
-
-    createUserDoc({
-      uid: result.user.uid,
-      email: result.user.email as string, // need "as string" because firebase sets email as "string | null"
-      displayName: result.user.displayName,
-      photoURL: result.user.photoURL,
-      aboutMe: "",
-      sheetsTotal: 0,
-    });
-
-    navigate("/");
-  }
-
-  async function register(
-    e: React.FormEvent<HTMLFormElement>,
-    email: string,
-    password: string
-  ): Promise<void> {
-    e.preventDefault();
-
-    const result = await doCreateUserWithEmailAndPassword(email, password);
-
-    if (!result) return;
-    createUserDoc({
-      uid: result.user.uid,
-      email: result.user.email as string, // need "as string" because firebase sets email as "string | null"
-      displayName: result.user.displayName,
-      photoURL: result.user.photoURL,
-      aboutMe: "",
-      sheetsTotal: 0,
-    });
-
-    navigate("/");
-  }
-
-  const currPlayingMapped = currPlaying.map((p) => {
-    return (
-      <div
-        key={p.id}
-        className={`w-full h-[10rem] rounded-[1.5rem]  z-4
-        transform hover:-translate-y-[6rem] duration-300 ease-in-out
-        absolute p-4`}
-        style={{ backgroundColor: myPalette[p.id], top: `${p.id * 4}rem` }}
-      >
-        <article
-          className={`h-full w-full
-        flex flex-col justify-between
-        ${isEven(p.id) ? "text-black/70" : "text-white/70"}`}
-        >
-          <h1 className="text-2xl uppercase font-bold">{p.name}</h1>
-          <div
-            className="w-full
-            flex flex-row justify-between"
-          >
-            <div className="flex flex-col gap-2 text-xs">
-              <p>{p.composer}</p>
-              <p>{p.playTime} days played</p>
-            </div>
-            <FiArrowUpRight className="text-4xl" />
-          </div>
-        </article>
-      </div>
-    );
-  });
+  // fetch user's currently playing + favourite sheet at the start
+  useEffect(() => {
+    if (userLoggedIn) {
+      async function getUserInfo() {
+        const userRef = doc(db, "users", uid as string);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const { currentlyPracticing, favouritePiece } = userSnap.data();
+          setCurrPracticing(currentlyPracticing);
+          setFavouritePiece(favouritePiece);
+        }
+      }
+      getUserInfo();
+    }
+  }, []);
 
   if (!userLoggedIn)
     return (
@@ -153,22 +90,23 @@ export default function Home() {
 
   return (
     <div
-      className="w-full max-w-[55rem] mx-auto 
+      className="w-full max-w-[55rem] mx-auto pt-8
         flex flex-col sm:flex-row font-light gap-6 md:gap-20"
     >
       {/** ---- current favourite ---------- */}
       <section className="w-full max-w-[50%] ml-5 md:ml-0 ">
-        {/** --(1)-- */}
-        <p className=" text-sm mb-4">CURRENT FAVOURITE</p>
+        <p className=" text-sm mb-4 text-black/40">CURRENT FAVOURITE</p>
+
         <article
-          className="max-w-full
-        flex flex-row sm:flex-col gap-4 text-black/70"
+          className="max-w-full items-center sm:items-start
+        flex flex-row sm:flex-col gap-10 sm:gap-6 text-black/70"
         >
+          {/** --(1)-- */}
           <h1
             className="font-bold break-words  max-w-full
                     text-4xl md:text-6xl"
           >
-            ASJHVEQWOEIHOBHDSAHDVASDIOUGWE
+            {favouritePiece?.title}
           </h1>
 
           {/** --(2)-- */}
@@ -192,8 +130,51 @@ export default function Home() {
          bg-white  text-black/70
         flex flex-col gap-4"
         >
-          <p className="text-sm px-2">CURRENTLY PRACTICING</p>
-          <div className="flex flex-col relative">{currPlayingMapped}</div>
+          <p className="text-sm px-2 text-black/40">CURRENTLY PRACTICING</p>
+          <div className="flex flex-col relative">
+            {currPracticing.map((p: LogTargetType, index: number) => {
+              return (
+                <div
+                  key={p.sheetId}
+                  className={`w-full h-[10rem] rounded-[1.5rem]  z-4
+        transform hover:-translate-y-[6rem] duration-300 ease-in-out
+        absolute p-4`}
+                  style={{
+                    backgroundColor: myPalette[index],
+                    top: `${index * 4}rem`,
+                  }}
+                >
+                  <article
+                    className={`h-full w-full
+        flex flex-col justify-between
+        ${isEven(index) ? "text-black/70" : "text-white/70"}`}
+                  >
+                    <h1 className="text-2xl uppercase font-bold">{p.title}</h1>
+                    <div
+                      className="w-full
+            flex flex-row justify-between"
+                    >
+                      <div className="flex flex-col gap-2 text-xs">
+                        <p>{p.composer}</p>
+                        <p>0 days played</p>
+                      </div>
+                      <Link
+                        to={`/sheet/${p.sheetId}`}
+                        state={{
+                          title: p.title,
+                          composer: p.composer,
+                          sheetId: p.sheetId,
+                        }}
+                      >
+                        {" "}
+                        <FiArrowUpRight className="text-6xl" />
+                      </Link>
+                    </div>
+                  </article>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>
