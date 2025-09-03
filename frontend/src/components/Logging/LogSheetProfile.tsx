@@ -3,7 +3,6 @@
 
 import { RxCross1 } from "react-icons/rx";
 import { FaSearch } from "react-icons/fa";
-import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
 import { slugify } from "../../utils.ts";
 
@@ -23,13 +22,10 @@ export default function LogSheetProfile({
   setFavouritePiece,
   isLoggingCurrentlyPracticing,
   setIsLoggingCurrentlyPracticing,
-  setCurrentlyPracticingSheetIds,
   setCurrentlyPracticing,
 }) {
   const [searchParams, setSearchParams] = useState("");
   const [results, setResults] = useState<SearchResultType[] | null>(null);
-
-  const { setLogTarget, logTarget } = useLayout();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -113,7 +109,9 @@ export default function LogSheetProfile({
                     };
 
                     const clonedLogTarget = structuredClone(newTarget);
-                    // self-explainatory
+
+                    // add the cloned logTarget to favourite.
+
                     if (isLoggingFavourite) {
                       setFavouritePiece(clonedLogTarget);
                       console.log(
@@ -123,21 +121,13 @@ export default function LogSheetProfile({
                       
                     }
 
-                    // self-explainatory
+                    // add the cloned logTarget to currently practicing. 
+                    
                     if (isLoggingCurrentlyPracticing) {
                       setCurrentlyPracticing((prev: any) => [
                         ...prev,
                         clonedLogTarget,
                       ]);
-                      setCurrentlyPracticingSheetIds((prev:any) =>[
-                        ...prev,
-                        clonedLogTarget.sheetId
-                      ])
-                      console.log(
-                        "Adding the following piece to the currently practicing state:",
-                        clonedLogTarget
-                      );
-                    
                     }
                     setIsLoggingFavourite(false);
                     setIsLoggingCurrentlyPracticing(false)

@@ -1,46 +1,52 @@
-import { doSignout } from "../../firebase/auth.ts";
 import { useLayout } from "../../components/Layout.tsx";
 import { CgMoreO } from "react-icons/cg";
 import { useEffect, useState } from "react";
-import { getReviewsByUser } from "../../utils.ts";
 import { Link } from "react-router-dom";
 import { getSheets } from "../../firebase/database.ts";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig.js";
+import { LogTargetType, UserType } from "../../types.ts";
 
 export default function Profile() {
   // ------ user detail
+  const { uid } = useLayout();
+
   const [sheetsTotal, setSheetsTotal] = useState(0);
   const [sheetsAnnual, setSheetsAnnual] = useState(0);
   const [friendsCount, setFriendsCount] = useState(0);
-  const [favouritePiece, setFavouritePiece] = useState<string | null>(null);
-  const [currentlyPracticing, setCurrentlyPracticing] = useState<
-    string[] | null
-  >(null);
-  // ------ user info
-  const [pfp, setPfp] = useState(""); // photoURL
-  const [username, setUsername] = useState("");
-  const [aboutMe, setAboutMe] = useState("");
-
-  const { uid, displayName, photoURL } = useLayout();
+  const [userData, setUserData] = useState<Partial<UserType>>({
+    aboutMe: "",
+    currentlyPracticing: [],
+    displayName: "",
+    favouritePiece: null,
+    photoURL: null,
+    // the missing fields will be supplemented once the component mounts.
+  });
 
   useEffect(() => {
-    async function fetchSheets() {
+    async function fetchUserInfo() {
       const userRef = doc(db, "users", uid as string);
       onSnapshot(userRef, async (userSnap) => {
         if (userSnap.exists()) {
+          // fetch sheets stats (total / annual)
           const { sheetsTotalCount, sheetsAnnualCount } = await getSheets(
             uid as string
           );
           setSheetsTotal(sheetsTotalCount);
           setSheetsAnnual(sheetsAnnualCount);
+
+          // fetch user info. The userData object now listens directly to the user doc.
+          setUserData(userSnap.data());
         }
       });
     }
-    fetchSheets();
+
+    // Fetching user info
+
+    fetchUserInfo();
   }, []);
 
-  console.log(photoURL)
+  console.log(userData);
 
   return (
     <div className="flex flex-col w-full justify-center items-center text-black/70 gap-16 pt-8 md:pt-0">
@@ -54,9 +60,9 @@ export default function Profile() {
         <div className="flex flex-col sm:flex-row gap-8 ">
           {/** ----- 1. pfp ----- */}
           <div className="h-fit w-full sm:w-fit flex justify-center items-center">
-            {photoURL ? (
+            {userData.photoURL ? (
               <img
-                src={photoURL}
+                src={userData.photoURL}
                 alt="profile image"
                 className="rounded-[50%]"
               />
@@ -68,7 +74,7 @@ export default function Profile() {
           {/** ----- 2. username + aboutme ----- */}
           <div className="flex flex-col gap-2 justify-center">
             <div className="flex gap-2 items-center">
-              <h1 className="text-2xl font-light">{displayName}</h1>
+              <h1 className="text-2xl font-light">{userData.displayName}</h1>
               <Link to={`edit`}>
                 <p className="text-black/20">
                   <CgMoreO />
@@ -76,7 +82,7 @@ export default function Profile() {
               </Link>
             </div>
             <div className="w-full">
-              <p className="text-sm font-light">Lorem ipsum dolor dit amet.</p>
+              <p className="text-sm font-light">{userData.aboutMe}</p>
             </div>
           </div>
         </div>
@@ -118,9 +124,24 @@ export default function Profile() {
         <h2 className="text-sm font-light border-b-[1px] border-black/20 text-black/40">
           FAVOURITE PIECE
         </h2>
-        <p className="text-2xl font-serif  italic">
-          La fille aux cheveaux de lin
-        </p>
+        {userData.favouritePiece ? (
+          <Link
+            to={`/sheet/${userData.favouritePiece.sheetId}`}
+            state={{
+              title:userData.favouritePiece.title,
+              composer: userData.favouritePiece.composer,
+              sheetId:userData.favouritePiece.sheetId,
+            }}
+          >
+            <p className="text-2xl font-serif  italic">
+              {userData.favouritePiece.title}
+            </p>
+          </Link>
+        ) : (
+          <p className="text-sm font-light text-black/40">
+            You haven't set your favourite piece yet.
+          </p>
+        )}
       </section>
 
       {/** ========== CURRENTLY PRACTICING ========== */}
@@ -132,9 +153,26 @@ export default function Profile() {
         <h2 className="text-sm font-light border-b-[1px] border-black/20 text-black/40">
           CURRENTLY PRACTICING
         </h2>
-        <p className="text-2xl font-serif  italic">
-          La fille aux cheveaux de lin
-        </p>
+        {(userData.currentlyPracticing as []).length > 0 ? (
+          (userData.currentlyPracticing as []).map((piece: LogTargetType) => {
+            return (
+              <Link
+                to={`/sheet/${piece.sheetId}`}
+                state={{
+                  title: piece.title,
+                  composer: piece.composer,
+                  sheetId: piece.sheetId,
+                }}
+              >
+                <p className="text-2xl font-serif  italic">{piece.title}</p>
+              </Link>
+            );
+          })
+        ) : (
+          <p className="text-sm font-light text-black/40">
+            You haven't set your favourite piece yet.
+          </p>
+        )}
       </section>
     </div>
   );

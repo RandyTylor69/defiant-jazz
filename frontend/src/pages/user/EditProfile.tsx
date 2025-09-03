@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { doSignout } from "../../firebase/auth.ts";
+import { updateProfile } from "firebase/auth";
 import { useLayout } from "../../components/Layout.tsx";
 import { MdCancel } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
 import LogSheetProfile from "../../components/Logging/LogSheetProfile.tsx";
 import { LogTargetType } from "../../types.ts";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { auth, db } from "../../firebase/firebaseConfig.js";
+
 export default function EditProfile() {
   // either a File type object or null
   const [photoFile, setPhotoFile] = useState<File | undefined>(undefined);
@@ -26,14 +27,30 @@ export default function EditProfile() {
   const [currentlyPracticing, setCurrentlyPracticing] = useState<
     LogTargetType[]
   >([]);
-  const [currentlyPracticingSheetIds, setCurrentlyPracticingSheetIds] =
-    useState<string[]>([]);
   const [isLoggingProfile, setIsLoggingProfile] = useState(false);
-  const { displayName, uid } = useLayout();
+  const { displayName, uid, photoURL } = useLayout();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // fetch from db for the user info
+    async function fetchUserInfo() {
+      const userRef = doc(db, "users", uid as string);
+      const userSnapshot = await getDoc(userRef);
+      if (userSnapshot.exists()) {
+        const {displayName, aboutMe, favouritePiece, currentlyPracticing} = userSnapshot.data();
+        setNewDisplayName(displayName)
+        setNewAboutMe(aboutMe)
+        setFavouritePiece(favouritePiece)
+        setCurrentlyPracticing(currentlyPracticing)
+      }
+    }
+
+    fetchUserInfo()
+
     setNewDisplayName(displayName);
   }, []);
+
+  
 
   async function handleSignOut() {
     await doSignout();
@@ -60,22 +77,32 @@ export default function EditProfile() {
 
       if (!res.ok) console.log("Error while uploading file: ", data.error);
 
-      setNewProfileURL(data.url)
+      setNewProfileURL(data.url);
     }
 
     // 2. Updating the user document
     try {
       await updateDoc(doc(db, "users", uid as string), {
-        photoURL: newProfileURL ? newProfileURL : null,
-        aboueMe: newAboutMe,
+        photoURL: newProfileURL ? newProfileURL : photoURL,
+        aboutMe: newAboutMe,
         displayName: newDisplayName,
         favouritePiece: favouritePiece,
-        currentlyPracticing: currentlyPracticingSheetIds,
+        currentlyPracticing: currentlyPracticing
       });
+
+      navigate("..");
       console.log("successful submit!");
-      
+      console.log(auth.currentUser, displayName);
     } catch (err) {
       console.error("error from updating doc: ", err);
+    }
+
+    // 4. update the Auth object (displayName, photoURL)
+    if (auth.currentUser) {
+      await updateProfile(auth.currentUser, {
+        displayName: newDisplayName,
+        photoURL: newProfileURL ? newProfileURL : photoURL,
+      });
     }
   }
 
@@ -114,6 +141,7 @@ export default function EditProfile() {
                 }}
               />
             </label>
+
             {photoFile && (
               <div className="flex gap-2 items-center font-light text-black/40 italic underline text-xs">
                 <p>{photoFile.name}</p>
@@ -232,7 +260,6 @@ export default function EditProfile() {
           setFavouritePiece={setFavouritePiece}
           isLoggingCurrentlyPracticing={isLoggingCurrentlyPracticing}
           setIsLoggingCurrentlyPracticing={setIsLoggingCurrentlyPracticing}
-          setCurrentlyPracticingSheetIds={setCurrentlyPracticingSheetIds}
           setCurrentlyPracticing={setCurrentlyPracticing}
         />
       )}

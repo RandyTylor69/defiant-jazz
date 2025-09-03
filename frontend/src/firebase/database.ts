@@ -1,4 +1,4 @@
-import { DatabaseSync } from "node:sqlite";
+
 import { ReviewType } from "../types";
 
 import { db } from "./firebaseConfig";

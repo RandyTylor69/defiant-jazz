@@ -1,4 +1,4 @@
-import { User } from "firebase/auth";
+import { Auth, User } from "firebase/auth";
 
 export type LayoutContextType = {
   setIsLogging: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,6 +14,7 @@ export type LayoutContextType = {
   displayName: string;
   photoURL: string | null;
   isLoggedIn: User | null;
+  auth: Auth ;
 };
 
 export type LogTargetType = {
@@ -37,3 +38,23 @@ export type ReviewType = {
   photoURL: string | null | undefined;
   creationDate?: string;
 };
+
+export type UserType = {
+  aboutMe: string;
+  currentlyPracticing: LogTargetType[];
+  displayName: string;
+  email: string;
+  favouritePiece: LogTargetType | null;
+  photoURL: string | null;
+  sheetsTotal: number;
+  uid: number;
+}
+
+export type SheetType = {
+  composer: string;
+  creationDate: string;
+  fullName: string;
+  practicedCount: number;
+  reviewCount: number;
+  title: string;
+}
