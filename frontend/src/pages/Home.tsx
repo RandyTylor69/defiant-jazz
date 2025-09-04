@@ -11,9 +11,9 @@ import { db } from "../firebase/firebaseConfig.js";
 import { doc, getDoc } from "firebase/firestore";
 import { LogTargetType } from "../types.ts";
 import { Link } from "react-router-dom";
+import { doSignout } from "../firebase/auth.ts";
 
 export default function Home() {
-  const navigate = useNavigate();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   // the useAuth() hook contains the user's logged in status.
@@ -37,14 +37,25 @@ export default function Home() {
         const userRef = doc(db, "users", uid as string);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
+          console.log(userSnap.data())
           const { currentlyPracticing, favouritePiece } = userSnap.data();
+          
           setCurrPracticing(currentlyPracticing);
           setFavouritePiece(favouritePiece);
+
+        } else {
+          console.log("the user doesnt exist")
         }
       }
       getUserInfo();
     }
   }, []);
+
+    async function handleSignOut() {
+      await doSignout();
+      console.log("User signed out.");
+    }
+  
 
   if (!userLoggedIn)
     return (

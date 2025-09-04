@@ -1,5 +1,5 @@
 import { FormEvent } from "react";
-import { NavigateFunction} from "react-router-dom";
+import { NavigateFunction } from "react-router-dom";
 
 // Firebase
 import {
@@ -8,6 +8,8 @@ import {
   doCreateUserWithEmailAndPassword,
   createUserDoc,
 } from "./auth.ts";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "./firebaseConfig.js";
 
 // Types
 // (Optional) If you have a `UserType`, import it here
@@ -36,14 +38,22 @@ export async function signInWithGoogle(
 
   console.log(result.user);
 
-  await createUserDoc({
-    uid: result.user.uid,
-    email: result.user.email as string, // firebase types `email` as string | null
-    displayName: result.user.displayName,
-    photoURL: result.user.photoURL,
-    aboutMe: "",
-    sheetsTotal: 0,
-  });
+  const userRef = doc(db, "users", result.user.uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    // Only create if user doc does not already exist
+    await createUserDoc({
+      uid: result.user.uid,
+      email: result.user.email as string,
+      displayName: result.user.displayName,
+      photoURL: result.user.photoURL,
+      aboutMe: "",
+      sheetsTotal: 0,
+      currentlyPracticing: [],
+      favouritePiece: null,
+    });
+  }
 
   navigate("/");
 }
@@ -55,17 +65,23 @@ export async function register(
   navigate: NavigateFunction
 ): Promise<void> {
   e.preventDefault();
-  const result = await doCreateUserWithEmailAndPassword(email, password);
-  if (!result) return;
-
-  await createUserDoc({
-    uid: result.user.uid,
-    email: result.user.email as string,
-    displayName: result.user.displayName,
-    photoURL: result.user.photoURL,
-    aboutMe: "",
-    sheetsTotal: 0,
-  });
-
-  navigate("/");
+  try {
+    const result = await doCreateUserWithEmailAndPassword(email, password);
+    if (!result) return;
+    await createUserDoc({
+      uid: result.user.uid,
+      email: result.user.email as string,
+      displayName: result.user.displayName,
+      photoURL: result.user.photoURL,
+      aboutMe: "",
+      sheetsTotal: 0,
+      currentlyPracticing: [],
+      favouritePiece: null,
+    });
+    navigate("/");
+  } catch (err) {
+    if (err.code === "auth/email-already-in-use") {
+      alert("User exists already, please log in :)");
+    }
+  }
 }
