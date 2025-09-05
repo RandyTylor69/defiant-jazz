@@ -5,12 +5,14 @@ import { TfiAngleLeft } from "react-icons/tfi";
 import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
 import { addReviewToDB } from "../../utils.ts";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams,} from "react-router-dom";
+
 
 export default function LogSheetDetail() {
   const [isAtSheetPage, setIsAtSheetPage] = useState(false);
-  const navigate = useNavigate();
-  const { sheetId } = useParams();
+
+  const { sheetId} = useParams();
+  const {setIsAnyLogWindowOpen} = useLayout()
 
   const {
     setIsLogging,
@@ -69,8 +71,6 @@ export default function LogSheetDetail() {
     setIsLoggingFinished(true);
   }
 
-  console.log(logTarget)
-
   // -------------- RATING MECHANICS -------------------
   function toggleRating(toggleID: number) {
     // Click on a half-star. All its previous ones (include itself) should light up.
@@ -127,6 +127,7 @@ export default function LogSheetDetail() {
             onClick={() => {
               setIsLoggingDetail(false);
               setIsLogging(false);
+              setIsAnyLogWindowOpen(false);
             }}
           >
             <RxCross1 />

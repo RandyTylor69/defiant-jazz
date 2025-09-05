@@ -6,21 +6,18 @@ import { FaSearch } from "react-icons/fa";
 import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
 import { slugify } from "../../utils.ts";
-
-type SearchResultType = {
-  ns: number;
-  title: string;
-  snippet: string;
-  timestamp: string;
-  size: number;
-  wordcount: number;
-};
+import { SearchResultType } from "../../types.ts";
 
 export default function LogSheet() {
   const [searchParams, setSearchParams] = useState("");
   const [results, setResults] = useState<SearchResultType[] | null>(null);
 
-  const { setIsLogging, setIsLoggingDetail, setLogTarget } = useLayout();
+  const {
+    setIsLogging,
+    setIsLoggingDetail,
+    setLogTarget,
+    setIsAnyLogWindowOpen,
+  } = useLayout();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -58,7 +55,10 @@ export default function LogSheet() {
           </h1>
           <h2
             className="absolute top-4 right-4 text-black/40 cursor-pointer"
-            onClick={() => setIsLogging(false)}
+            onClick={() => {
+              setIsAnyLogWindowOpen(false);
+              setIsLogging(false);
+            }}
           >
             <RxCross1 />
           </h2>

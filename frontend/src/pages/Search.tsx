@@ -12,8 +12,7 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SearchItem[]>([]);
   const { params } = useParams<{ params: string }>(); // Typing the content of the object returned by useParams()
-  const { setLogTarget } = useLayout();
-  //const [isSearch, setIsSearching] = useState(false)
+  const { setLogTarget} = useLayout();
   useEffect(() => {
     setLoading(true);
     async function fetchData() {
@@ -36,8 +35,8 @@ export default function Search() {
   if (loading) return <h1>Loading</h1>;
   return (
     <div
-      className="h-fit w-full
-    flex flex-col gap-6"
+      className={`h-fit w-full mt-10 md:mt-0 
+    flex flex-col gap-6`}
     >
       <p className="text-sm uppercase font-light">
         Search results for "{params}".{" "}

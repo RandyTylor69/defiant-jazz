@@ -6,8 +6,11 @@ export type LayoutContextType = {
   setIsLoggingFinished: React.Dispatch<React.SetStateAction<boolean>>;
   setIsEditingLogDetail: React.Dispatch<React.SetStateAction<boolean>>;
   setIsEditingLogFinished: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsAnyLogWindowOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isLogging: boolean;
   isLoggingFinished: boolean;
   isEditingLogFinished: boolean;
+  isAnyLogWindowOpen: boolean;
   logTarget: LogTargetType;
   setLogTarget: React.Dispatch<React.SetStateAction<LogTargetType>>;
   uid: string | undefined;
@@ -58,3 +61,12 @@ export type SheetType = {
   reviewCount: number;
   title: string;
 }
+
+export type SearchResultType = {
+  ns: number;
+  title: string;
+  snippet: string;
+  timestamp: string;
+  size: number;
+  wordcount: number;
+};

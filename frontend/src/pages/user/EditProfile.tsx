@@ -27,7 +27,7 @@ export default function EditProfile() {
     LogTargetType[]
   >([]);
   const [isLoggingProfile, setIsLoggingProfile] = useState(false);
-  const { uid, photoURL } = useLayout();
+  const { uid, photoURL, setIsAnyLogWindowOpen } = useLayout();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,18 +36,18 @@ export default function EditProfile() {
       const userRef = doc(db, "users", uid as string);
       const userSnapshot = await getDoc(userRef);
       if (userSnapshot.exists()) {
-        const {displayName, aboutMe, favouritePiece, currentlyPracticing} = userSnapshot.data();
-        setNewDisplayName(displayName)
-        setNewAboutMe(aboutMe)
-        setFavouritePiece(favouritePiece)
-        setCurrentlyPracticing(currentlyPracticing)
+        const { displayName, aboutMe, favouritePiece, currentlyPracticing } =
+          userSnapshot.data();
+        setNewDisplayName(displayName);
+        setNewAboutMe(aboutMe);
+        setFavouritePiece(favouritePiece);
+        setCurrentlyPracticing(currentlyPracticing);
       }
     }
 
-    fetchUserInfo()
+    fetchUserInfo();
   }, []);
 
-  
 
   async function handleSignOut() {
     await doSignout();
@@ -57,7 +57,7 @@ export default function EditProfile() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    let newPhotoURL : string | null = null;
+    let newPhotoURL: string | null = null;
 
     // 1. Add the new profile picture's URL to firebase storage
     if (photoFile) {
@@ -76,23 +76,21 @@ export default function EditProfile() {
 
       if (!res.ok) console.log("Error while uploading file: ", data.error);
 
-      newPhotoURL = data.url
+      newPhotoURL = data.url;
     }
 
     // 2. Updating the user document
     try {
-
-       await updateDoc(doc(db, "users", uid as string), {
-        photoURL: newPhotoURL? newPhotoURL : photoURL,
+      await updateDoc(doc(db, "users", uid as string), {
+        photoURL: newPhotoURL ? newPhotoURL : photoURL,
         aboutMe: newAboutMe,
         displayName: newDisplayName,
         favouritePiece: favouritePiece,
-        currentlyPracticing: currentlyPracticing
-      }); 
+        currentlyPracticing: currentlyPracticing,
+      });
 
       navigate("..");
       console.log("successful submit!");
-      
     } catch (err) {
       console.error("error from updating doc: ", err);
     }
@@ -101,7 +99,7 @@ export default function EditProfile() {
     if (auth.currentUser) {
       await updateProfile(auth.currentUser, {
         displayName: newDisplayName,
-        photoURL: newPhotoURL? newPhotoURL : photoURL,
+        photoURL: newPhotoURL ? newPhotoURL : photoURL,
       });
     }
   }
@@ -194,6 +192,7 @@ export default function EditProfile() {
             type="button"
             className="btn-secondary rounded-[0rem] w-fit"
             onClick={() => {
+              setIsAnyLogWindowOpen(true);
               setIsLoggingProfile(true);
               setIsLoggingFavourite(true);
             }}
@@ -234,6 +233,7 @@ export default function EditProfile() {
               onClick={() => {
                 setIsLoggingProfile(true);
                 setIsLoggingCurrentlyPracticing(true);
+                setIsAnyLogWindowOpen(true);
               }}
             >
               Add new

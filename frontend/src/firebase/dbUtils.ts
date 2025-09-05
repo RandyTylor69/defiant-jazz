@@ -19,18 +19,16 @@ export async function signIn(
   e: FormEvent<HTMLFormElement>,
   email: string,
   password: string,
-  navigate: NavigateFunction
 ): Promise<void> {
   e.preventDefault();
   const result = await doSignInWithEmailAndPassword(email, password);
   if (!result) return;
 
-  navigate("/");
+      window.location.reload();
 }
 
 export async function signInWithGoogle(
   e: FormEvent<HTMLFormElement>,
-  navigate: NavigateFunction
 ): Promise<void> {
   e.preventDefault();
   const result = await doSignInWithGoogle();
@@ -46,21 +44,20 @@ export async function signInWithGoogle(
     await createUserDoc(result.user);
   }
 
-  navigate("/");
+  window.location.reload()
 }
 
 export async function register(
   e: FormEvent<HTMLFormElement>,
   email: string,
   password: string,
-  navigate: NavigateFunction
 ): Promise<void> {
   e.preventDefault();
   try {
     const result = await doCreateUserWithEmailAndPassword(email, password);
     if (!result) return;
     await createUserDoc(result.user);
-    navigate("/");
+    window.location.reload()
   } catch (err) {
     if (err.code === "auth/email-already-in-use") {
       alert("User exists already, please log in :)");

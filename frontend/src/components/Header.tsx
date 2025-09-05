@@ -10,7 +10,9 @@ import { useLayout } from "./Layout.tsx";
 export default function Header() {
   const [isSearching, setIsSearching] = useState(false);
   const { currentUser, userLoggedIn } = useAuth();
-  const {setIsLogging} = useLayout()
+  const { setIsLogging, setIsAnyLogWindowOpen, isAnyLogWindowOpen } = useLayout();
+
+console.log(isAnyLogWindowOpen)
 
   return (
     <header className="w-full max-w-[55rem]">
@@ -55,20 +57,26 @@ export default function Header() {
               <FaSearch />
             </button>
             {userLoggedIn && (
-              <NavLink
-                to={`${currentUser?.displayName}`}
-               
-              >
-                {({isActive})=>(
-                   <button className={`btn-tertiary ${isActive? "bg-black/70 text-primary" : ""}`}>
-                  <FaUserLarge />
-                </button>
+              <NavLink to={`${currentUser?.displayName}`}>
+                {({ isActive }) => (
+                  <button
+                    className={`btn-tertiary ${
+                      isActive ? "bg-black/70 text-primary" : ""
+                    }`}
+                  >
+                    <FaUserLarge />
+                  </button>
                 )}
-               
               </NavLink>
             )}
             {userLoggedIn && (
-              <button className="btn-tertiary" onClick={()=>setIsLogging(prev=>!prev)}>
+              <button
+                className="btn-tertiary"
+                onClick={() => {
+                  setIsLogging((prev) => !prev);
+                  setIsAnyLogWindowOpen(true)
+                }}
+              >
                 <FaPlus />
               </button>
             )}

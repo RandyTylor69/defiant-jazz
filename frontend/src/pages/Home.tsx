@@ -9,11 +9,10 @@ import { useLayout } from "../components/Layout.tsx";
 import { db } from "../firebase/firebaseConfig.js";
 import { doc, getDoc } from "firebase/firestore";
 import { LogTargetType } from "../types.ts";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { getPlayTime } from "../utils.ts";
 
 export default function Home() {
-  const navigate = useNavigate();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   // the useAuth() hook contains the user's logged in status.
@@ -105,20 +104,20 @@ export default function Home() {
         flex flex-col sm:flex-row font-light gap-6 md:gap-20"
     >
       {/** ---- current favourite ---------- */}
-      <section className="w-full max-w-[50%] ml-5 md:ml-0 ">
+      <section className="w-full md:ml-0 ">
         <p className=" text-sm mb-4 text-black/40">CURRENT FAVOURITE</p>
 
         {/** -- displaying favourite -- */}
         <article
-          className="w-auto items-center sm:items-start h-[20rem] 
-        flex flex-col gap-10  text-black/70"
+          className="w-full h-fit 
+        flex flex-col gap-2 md:gap-6  text-black/70  "
         >
           {favouritePiece ? (
             <>
               <Link
                 to={`/sheet/${favouritePiece.sheetId}`}
                 className="font-bold break-words  max-w-full
-                    text-4xl md:text-6xl"
+                    text-4xl md:text-6xl "
                 state={{
                   title: favouritePiece.title,
                   composer: favouritePiece.composer,
