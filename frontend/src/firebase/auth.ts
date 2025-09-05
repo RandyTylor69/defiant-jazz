@@ -13,12 +13,14 @@ import {
 
 export async function createUserDoc(user:DocumentData){
   await setDoc(doc(db, "users", user.uid), {
-    uid: user.uid,
-    email:user.email,
-    displayName: user.displayName || "Anonymous",
-    photoURL: user.photoURL || null,
-    aboutMe: user.aboutMe,
-    sheetsTotal: user.sheetsTotal
+      uid: user.uid,
+      email: user.email as string,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      aboutMe: "",
+      sheetsTotal: 0,
+      currentlyPracticing: [],
+      favouritePiece: null,
   })
 }
 

@@ -49,7 +49,7 @@ export default function LogSheetProfile({
   }, [searchParams]);
 
   return (
-    <div className="inset-0 absolute bg-black/80 backdrop-blur-md z-[999] ">
+    <div className="inset-0 absolute bg-black/80 backdrop-blur-md z-[999] h-[100vh]">
       <div
         className="absolute w-[90vw] max-w-[30rem] h-fit p-4 border-black/20 border-2
                 bg-primary text-black/70

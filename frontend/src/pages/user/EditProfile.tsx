@@ -108,7 +108,7 @@ export default function EditProfile() {
 
   return (
     <div
-      className="w-full h-full 
+      className="w-full h-full
     flex flex-col text-black/70 gap-12"
     >
       <Link to={".."}>

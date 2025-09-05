@@ -2,7 +2,7 @@ import { useLayout } from "../../components/Layout.tsx";
 import { CgMoreO } from "react-icons/cg";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getSheets } from "../../utils.ts";
+import { getSheetsTotalAndAnnual } from "../../utils.ts";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig.js";
 import { LogTargetType, UserType } from "../../types.ts";
@@ -29,7 +29,7 @@ export default function Profile() {
       onSnapshot(userRef, async (userSnap) => {
         if (userSnap.exists()) {
           // fetch sheets stats (total / annual)
-          const { sheetsTotalCount, sheetsAnnualCount } = await getSheets(
+          const { sheetsTotalCount, sheetsAnnualCount } = await getSheetsTotalAndAnnual(
             uid as string
           );
           setSheetsTotal(sheetsTotalCount);
@@ -46,7 +46,6 @@ export default function Profile() {
     fetchUserInfo();
   }, []);
 
-  console.log(userData);
 
   return (
     <div className="flex flex-col w-full 
@@ -149,15 +148,16 @@ export default function Profile() {
 
       <section
         className="w-full h-fit
-      flex flex-col gap-2"
+      flex flex-col gap-4"
       >
         <h2 className="text-sm font-light border-b-[1px] border-black/20 text-black/40">
           CURRENTLY PRACTICING
         </h2>
         {(userData.currentlyPracticing as []).length > 0 ? (
-          (userData.currentlyPracticing as []).map((piece: LogTargetType) => {
+          (userData.currentlyPracticing as []).map((piece: LogTargetType, index) => {
             return (
               <Link
+              key={index}
                 to={`/sheet/${piece.sheetId}`}
                 state={{
                   title: piece.title,
@@ -165,7 +165,7 @@ export default function Profile() {
                   sheetId: piece.sheetId,
                 }}
               >
-                <p className="text-2xl font-serif  italic">{piece.title}</p>
+                <p className=" font-serif italic leading-4">{piece.title}</p>
               </Link>
             );
           })

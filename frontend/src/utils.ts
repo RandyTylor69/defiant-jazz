@@ -9,9 +9,10 @@ import {
   setDoc,
   addDoc,
   updateDoc,
+  increment,
 } from "firebase/firestore";
 
-import { SheetType, ReviewType, LogTargetType } from "./types";
+import { SheetType, ReviewType, LogTargetType, UserType } from "./types";
 
 // -----------------------------
 // Helpers
@@ -125,14 +126,9 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
 
   // 5. Increment user’s total sheet count
   const userRef = doc(db, "users", uid);
-  const userSnap = await getDoc(userRef);
-  await setDoc(
-    userRef,
-    {
-      sheetsTotal: (userSnap.data()?.sheetsTotal || 0) + 1,
-    },
-    { merge: true }
-  );
+  await updateDoc(userRef, {
+    sheetsTotal: increment(1)
+  });
 }
 
 export async function updateReview(
@@ -143,15 +139,39 @@ export async function updateReview(
   await updateDoc(reviewRef, updatedReview);
 }
 
+export async function getPlayTime(
+  sheetId: string,
+  uid: string
+): Promise<number | null> {
+  const reviewQuery = query(
+    collection(db, "reviews"),
+    where("uid", "==", uid),
+    where("sheetId", "==", sheetId)
+  );
+  const reviewSnap = await getDocs(reviewQuery);
+  if (!reviewSnap.empty) {
+    const reviewDoc = reviewSnap.docs[0];
+    const { practicedSince } = reviewDoc.data();
+    const startDate = new Date(practicedSince);
+    const endDate = new Date();
+    const diffInMs = endDate.valueOf() - startDate.valueOf();
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    //console.log(Math.floor(diffInDays));
+    return Math.floor(diffInDays);
+  }
+  return null;
+}
+
 // -----------------------------
 // Stats
 // -----------------------------
 
 // returns total reviewed sheets and how many reviewed this year
-export async function getSheets(uid: string) {
+export async function getSheetsTotalAndAnnual(uid: string) {
   const userRef = doc(db, "users", uid);
   const userSnap = await getDoc(userRef);
 
+  // count reviews in total
   const sheetsTotalCount = userSnap.data()?.sheetsTotal || 0;
 
   // count reviews in current year
@@ -174,6 +194,8 @@ export async function getSheets(uid: string) {
       sheetsAnnualCount++;
     }
   });
+
+  console.log(sheetsAnnualCount, sheetsAnnualCount);
 
   return { sheetsTotalCount, sheetsAnnualCount };
 }

@@ -43,16 +43,7 @@ export async function signInWithGoogle(
 
   if (!userSnap.exists()) {
     // Only create if user doc does not already exist
-    await createUserDoc({
-      uid: result.user.uid,
-      email: result.user.email as string,
-      displayName: result.user.displayName,
-      photoURL: result.user.photoURL,
-      aboutMe: "",
-      sheetsTotal: 0,
-      currentlyPracticing: [],
-      favouritePiece: null,
-    });
+    await createUserDoc(result.user);
   }
 
   navigate("/");
@@ -68,16 +59,7 @@ export async function register(
   try {
     const result = await doCreateUserWithEmailAndPassword(email, password);
     if (!result) return;
-    await createUserDoc({
-      uid: result.user.uid,
-      email: result.user.email as string,
-      displayName: result.user.displayName,
-      photoURL: result.user.photoURL,
-      aboutMe: "",
-      sheetsTotal: 0,
-      currentlyPracticing: [],
-      favouritePiece: null,
-    });
+    await createUserDoc(result.user);
     navigate("/");
   } catch (err) {
     if (err.code === "auth/email-already-in-use") {

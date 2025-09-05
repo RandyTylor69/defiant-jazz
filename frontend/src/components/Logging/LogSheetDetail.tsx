@@ -69,6 +69,8 @@ export default function LogSheetDetail() {
     setIsLoggingFinished(true);
   }
 
+  console.log(logTarget)
+
   // -------------- RATING MECHANICS -------------------
   function toggleRating(toggleID: number) {
     // Click on a half-star. All its previous ones (include itself) should light up.

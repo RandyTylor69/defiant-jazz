@@ -9,13 +9,13 @@ type SearchItem = {
 };
 
 export default function Search() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SearchItem[]>([]);
   const { params } = useParams<{ params: string }>(); // Typing the content of the object returned by useParams()
   const { setLogTarget } = useLayout();
   //const [isSearch, setIsSearching] = useState(false)
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     async function fetchData() {
       if (!params) return;
       //setIsSearching(true)
@@ -28,12 +28,12 @@ export default function Search() {
 
       data.query.search != null && setResults(data.query.search);
       //setIsSearching(false)
-      setLoading(false)
+      setLoading(false);
     }
     fetchData();
   }, []);
 
-  if(loading) return <h1>Loading</h1>
+  if (loading) return <h1>Loading</h1>;
   return (
     <div
       className="h-fit w-full
@@ -49,7 +49,7 @@ export default function Search() {
       </p>
       <ul className="">
         {results.length ? (
-          results.map((item) => {
+          results.map((item, index) => {
             // manually extract the composer name and the title.
             const composer = item.title.includes("(")
               ? item.title.split("(")[1].split(")")[0].trim()
@@ -58,7 +58,7 @@ export default function Search() {
             const sheetId = slugify(item.title);
             return (
               <Link
-              key={sheetId}
+                key={index}
                 to={`/sheet/${sheetId}`}
                 state={{ title, composer, sheetId }}
                 onClick={() =>
@@ -70,10 +70,7 @@ export default function Search() {
                   })
                 }
               >
-                <li
-                  className="py-2 mb-6 text-black/70 border-b-[2px] border-black/10"
-                  key={item.title}
-                >
+                <li className="py-2 mb-6 text-black/70 border-b-[2px] border-black/10">
                   <h1 className="text-xl font-bold ">{item.title}</h1>
                 </li>
               </Link>

@@ -12,8 +12,8 @@ export default function Sheet() {
   const location = useLocation();
   const navigate = useNavigate();
   const { sheetId } = useParams(); // not passed from state
-  const { title, composer } = location.state;
-  const { uid, setIsEditingLogDetail, setIsLoggingDetail, setLogTarget, isLoggedIn } =
+  const { title, composer} = location.state;
+  const { uid, setIsEditingLogDetail, setIsLoggingDetail, setLogTarget, isLoggedIn, logTarget } =
     useLayout();
   const [hasReviewed, setHasReviewed] = useState(false);
   const [reviewId, setReviewId] = useState("");
