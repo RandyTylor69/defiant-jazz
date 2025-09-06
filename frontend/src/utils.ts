@@ -122,8 +122,6 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
     { merge: true }
   );
 
-  console.log(reviewRef);
-
   // 5. Increment user’s total sheet count
   const userRef = doc(db, "users", uid);
   await updateDoc(userRef, {
@@ -194,8 +192,6 @@ export async function getSheetsTotalAndAnnual(uid: string) {
       sheetsAnnualCount++;
     }
   });
-
-  console.log(sheetsAnnualCount, sheetsAnnualCount);
 
   return { sheetsTotalCount, sheetsAnnualCount };
 }

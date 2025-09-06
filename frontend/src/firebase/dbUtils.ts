@@ -18,17 +18,18 @@ import { db } from "./firebaseConfig.js";
 export async function signIn(
   e: FormEvent<HTMLFormElement>,
   email: string,
-  password: string,
+  password: string
 ): Promise<void> {
   e.preventDefault();
   const result = await doSignInWithEmailAndPassword(email, password);
   if (!result) return;
 
-      window.location.reload();
+  window.location.reload();
 }
 
+
 export async function signInWithGoogle(
-  e: FormEvent<HTMLFormElement>,
+  e: FormEvent<HTMLFormElement>
 ): Promise<void> {
   e.preventDefault();
   const result = await doSignInWithGoogle();
@@ -44,20 +45,22 @@ export async function signInWithGoogle(
     await createUserDoc(result.user);
   }
 
-  window.location.reload()
+  window.location.reload();
 }
 
+// 3. Manual register with email + pw
 export async function register(
   e: FormEvent<HTMLFormElement>,
   email: string,
-  password: string,
+  password: string
 ): Promise<void> {
   e.preventDefault();
   try {
     const result = await doCreateUserWithEmailAndPassword(email, password);
     if (!result) return;
+    // Only create if user doc does not already exist
     await createUserDoc(result.user);
-    window.location.reload()
+    window.location.reload();
   } catch (err) {
     if (err.code === "auth/email-already-in-use") {
       alert("User exists already, please log in :)");

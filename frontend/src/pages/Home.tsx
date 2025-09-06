@@ -42,10 +42,10 @@ export default function Home() {
 
           setCurrPracticing(currentlyPracticing);
           setFavouritePiece(favouritePiece);
-          let time = await getPlayTime(favouritePiece.sheetId, uid as string);
-          setFavPiecePlayTime(time)
-          console.log(time)
-
+          if (favouritePiece) {
+            let time = await getPlayTime(favouritePiece.sheetId, uid as string);
+            setFavPiecePlayTime(time);
+          }
         } else {
           console.log("the user doesnt exist");
         }
@@ -53,8 +53,6 @@ export default function Home() {
       getUserInfo();
     }
   }, [uid]);
-
-  
 
   if (!userLoggedIn)
     return (

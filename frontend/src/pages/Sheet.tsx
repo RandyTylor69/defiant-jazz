@@ -1,23 +1,36 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { collection, DocumentData, getDoc, getDocs, query, where } from "firebase/firestore";
+import { useNavigate, useLocation, useParams, Link } from "react-router-dom";
+import {
+  collection,
+  doc,
+  DocumentData,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { useLayout } from "../components/Layout.tsx";
 import { updateReview } from "../utils.ts";
 import { ReviewType } from "../types.ts";
 import { FaRegUserCircle } from "react-icons/fa";
 
-
 export default function Sheet() {
   const location = useLocation();
   const navigate = useNavigate();
   const { sheetId } = useParams(); // not passed from state
-  const { title, composer} = location.state;
-  const { uid, setIsEditingLogDetail, setIsLoggingDetail, setLogTarget, isLoggedIn, logTarget } =
-    useLayout();
+  const { title, composer } = location.state;
+  const {
+    uid,
+    setIsEditingLogDetail,
+    setIsLoggingDetail,
+    setLogTarget,
+    isLoggedIn,
+  } = useLayout();
   const [hasReviewed, setHasReviewed] = useState(false);
   const [reviewId, setReviewId] = useState("");
   const [reviews, setReviews] = useState<DocumentData[]>([]);
+  const [authorProfileURLs, setAuthorProfileURLs] = useState<string[]>([]);
   const [ratingBg, setRatingBg] = useState([
     { id: 0, on: false },
     { id: 1, on: false },
@@ -42,7 +55,6 @@ export default function Sheet() {
     // ___________________________________________
 
     async function fetchUserReview() {
-
       const reviewQuery = query(
         // location: fetching from the "reviews" collection
         collection(db, "reviews"),
@@ -81,7 +93,20 @@ export default function Sheet() {
       if (reviewsSnapshot.empty) {
         console.log("No one has reviewed this sheet yet.");
       } else {
-        reviewsSnapshot.forEach((review) => {
+        reviewsSnapshot.forEach(async (review) => {
+          // We will do 2 thingw with each review fetched.
+          // 1. Get the author's profile picture.
+          const { uid: authorId } = review.data();
+          let authorProfileURL = null;
+          const authorRef = doc(db, "users", authorId);
+          const authorSnap = await getDoc(authorRef);
+          if (authorSnap.exists()) {
+            authorProfileURL = authorSnap.data().photoURL;
+          }
+
+          if (!authorProfileURL) return;
+          setAuthorProfileURLs((prev) => [...prev, authorProfileURL]);
+          // 2. Add the reviwe into the reviews state.
           setReviews((prev) => [...prev, review.data() as ReviewType]);
         });
       }
@@ -143,12 +168,11 @@ export default function Sheet() {
           >
             <button
               onClick={() =>
-                isLoggedIn ? (
-                       hasReviewed
-                  ? setIsEditingLogDetail(true)
-                  : setIsLoggingDetail(true)
-                ) : navigate("/")
-           
+                isLoggedIn
+                  ? hasReviewed
+                    ? setIsEditingLogDetail(true)
+                    : setIsLoggingDetail(true)
+                  : navigate("/")
               }
             >
               {hasReviewed ? "Edit your activity" : "Review or log..."}
@@ -184,7 +208,7 @@ export default function Sheet() {
           </h1>
         </div>
         <ul className="w-full h-fit flex flex-col gap-4 ">
-          {reviews.map((review) => {
+          {reviews.map((review, index) => {
             return (
               <li
                 className="w-full h-fit
@@ -193,23 +217,21 @@ export default function Sheet() {
                 key={review.uid}
               >
                 {/** --- div with user info --- */}
-                <div
+                <Link
+                  to={`/${review.uid}`}
                   className="w-full md:max-w-[5rem]
                  flex md:flex-col gap-2 "
                 >
-                  {review.photoURL ? (
-                    <img
-                      className="size-12 object-cover rounded-[50%]"
-                      src={`${review.photoURL}`}
-                      alt="user profile picture"
-                    />
-                  ) : (
-                    <div>
-                      <FaRegUserCircle  className="size-10 text-black/70"/>
-                    </div>
-                  )}
-                  <p className="text-sm text-black/70 ">{review.displayName ? review.displayName : "Anonymous"}</p>
-                </div>
+                  <img
+                    className="size-12 object-cover rounded-[50%]"
+                    src={`${authorProfileURLs[index]}`}
+                    alt="user profile picture"
+                  />
+
+                  <p className="text-sm text-black/70 ">
+                    {review.displayName ? review.displayName : "Anonymous"}
+                  </p>
+                </Link>
                 {/** --- div with comment --- */}
                 <article
                   className="w-full fit gap-2

@@ -60,7 +60,7 @@ export default function UserSheetsAnnual() {
     fetchUserSheets();
   }, []);
 
-  console.log(userSheets);
+
 
   if (loading) return <h1>Loading...</h1>;
   return (

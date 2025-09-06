@@ -22,6 +22,10 @@ export async function createUserDoc(user:DocumentData){
       currentlyPracticing: [],
       favouritePiece: null,
   })
+
+  await setDoc(doc(db, "following", user.uid), {
+    isFollowing: []
+  })
 }
 
 

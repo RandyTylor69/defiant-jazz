@@ -1,7 +1,7 @@
 import { useLayout } from "../../components/Layout.tsx";
 import { CgMoreO } from "react-icons/cg";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getSheetsTotalAndAnnual } from "../../utils.ts";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig.js";
@@ -9,7 +9,7 @@ import { LogTargetType, UserType } from "../../types.ts";
 
 export default function Profile() {
   // ------ user detail
-  const { uid } = useLayout();
+  const { uid } = useParams();
 
   const [sheetsTotal, setSheetsTotal] = useState(0);
   const [sheetsAnnual, setSheetsAnnual] = useState(0);
@@ -24,14 +24,16 @@ export default function Profile() {
   });
 
   useEffect(() => {
+    
+    console.log(uid)
+
     async function fetchUserInfo() {
       const userRef = doc(db, "users", uid as string);
       onSnapshot(userRef, async (userSnap) => {
         if (userSnap.exists()) {
           // fetch sheets stats (total / annual)
-          const { sheetsTotalCount, sheetsAnnualCount } = await getSheetsTotalAndAnnual(
-            uid as string
-          );
+          const { sheetsTotalCount, sheetsAnnualCount } =
+            await getSheetsTotalAndAnnual(uid as string);
           setSheetsTotal(sheetsTotalCount);
           setSheetsAnnual(sheetsAnnualCount);
 
@@ -46,10 +48,11 @@ export default function Profile() {
     fetchUserInfo();
   }, []);
 
-
   return (
-    <div className="flex flex-col w-full 
-    justify-center items-center text-black/70 gap-16 pt-8 md:pt-0">
+    <div
+      className="flex flex-col w-full 
+    justify-center items-center text-black/70 gap-16 pt-8 md:pt-0"
+    >
       {/** ========== USER DESCRIPTION ========== */}
 
       <section
@@ -128,9 +131,9 @@ export default function Profile() {
           <Link
             to={`/sheet/${userData.favouritePiece.sheetId}`}
             state={{
-              title:userData.favouritePiece.title,
+              title: userData.favouritePiece.title,
               composer: userData.favouritePiece.composer,
-              sheetId:userData.favouritePiece.sheetId,
+              sheetId: userData.favouritePiece.sheetId,
             }}
           >
             <p className="text-2xl font-serif  italic">
@@ -154,21 +157,23 @@ export default function Profile() {
           CURRENTLY PRACTICING
         </h2>
         {(userData.currentlyPracticing as []).length > 0 ? (
-          (userData.currentlyPracticing as []).map((piece: LogTargetType, index) => {
-            return (
-              <Link
-              key={index}
-                to={`/sheet/${piece.sheetId}`}
-                state={{
-                  title: piece.title,
-                  composer: piece.composer,
-                  sheetId: piece.sheetId,
-                }}
-              >
-                <p className=" font-serif italic leading-4">{piece.title}</p>
-              </Link>
-            );
-          })
+          (userData.currentlyPracticing as []).map(
+            (piece: LogTargetType, index) => {
+              return (
+                <Link
+                  key={index}
+                  to={`/sheet/${piece.sheetId}`}
+                  state={{
+                    title: piece.title,
+                    composer: piece.composer,
+                    sheetId: piece.sheetId,
+                  }}
+                >
+                  <p className=" font-serif italic leading-4">{piece.title}</p>
+                </Link>
+              );
+            }
+          )
         ) : (
           <p className="text-sm font-light text-black/40">
             You haven't set your favourite piece yet.

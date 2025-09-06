@@ -12,8 +12,6 @@ export default function Header() {
   const { currentUser, userLoggedIn } = useAuth();
   const { setIsLogging, setIsAnyLogWindowOpen, isAnyLogWindowOpen } = useLayout();
 
-console.log(isAnyLogWindowOpen)
-
   return (
     <header className="w-full max-w-[55rem]">
       <nav
@@ -57,7 +55,7 @@ console.log(isAnyLogWindowOpen)
               <FaSearch />
             </button>
             {userLoggedIn && (
-              <NavLink to={`${currentUser?.displayName}`}>
+              <NavLink to={`${currentUser?.uid}`} onClick={()=>window.location.reload()}>
                 {({ isActive }) => (
                   <button
                     className={`btn-tertiary ${

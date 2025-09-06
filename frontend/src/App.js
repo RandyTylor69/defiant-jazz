@@ -19,7 +19,7 @@ function App() {
           <Route path="search/:params" element={<Search />} />
           <Route path="sheet/:sheetId" element={<Sheet />} />
 
-          <Route path=":displayName">
+          <Route path=":uid">
             <Route index element={<Profile />} />
             <Route path="sheets" element={<UserSheets />} />
             <Route path="sheetsAnnual" element={<UserSheetsAnnual />} />

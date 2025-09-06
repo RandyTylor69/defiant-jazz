@@ -48,7 +48,6 @@ export default function EditLogSheetDetail() {
       const reviewSnapshot = await getDocs(reviewQuery);
 
       reviewSnapshot.forEach((review) => {
-        // console.log(review.id);
         setReviewId(review.id);
         setPracticedSince(review.data().practicedSince);
         setContent(review.data().content);
