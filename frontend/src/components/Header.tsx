@@ -44,9 +44,12 @@ export default function Header() {
         </div>
 
         {/** ---- rightnav div ------- */}
+
+
         {isSearching ? (
           <SearchBar setIsSearching={setIsSearching} />
         ) : (
+          // --------- search
           <div className="flex flex-row gap-4">
             <button
               className="btn-tertiary"
@@ -54,8 +57,11 @@ export default function Header() {
             >
               <FaSearch />
             </button>
+            {/** -------user  */}
             {userLoggedIn && (
-              <NavLink to={`${currentUser?.uid}`} onClick={()=>window.location.reload()}>
+              <NavLink
+                to={`${currentUser?.uid}`}
+              >
                 {({ isActive }) => (
                   <button
                     className={`btn-tertiary ${
@@ -72,7 +78,7 @@ export default function Header() {
                 className="btn-tertiary"
                 onClick={() => {
                   setIsLogging((prev) => !prev);
-                  setIsAnyLogWindowOpen(true)
+                  setIsAnyLogWindowOpen(true);
                 }}
               >
                 <FaPlus />

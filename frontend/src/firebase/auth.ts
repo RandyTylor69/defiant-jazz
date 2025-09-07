@@ -1,7 +1,7 @@
 // contains all the auth functions
 
 import { auth, db} from "./firebaseConfig";
-import { setDoc, doc, DocumentData } from "firebase/firestore";
+import { setDoc, doc, DocumentData, collection } from "firebase/firestore";
 
 import {
   createUserWithEmailAndPassword,
@@ -12,6 +12,7 @@ import {
 
 
 export async function createUserDoc(user:DocumentData){
+  // Creating the User document
   await setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
       email: user.email as string,
@@ -21,10 +22,6 @@ export async function createUserDoc(user:DocumentData){
       sheetsTotal: 0,
       currentlyPracticing: [],
       favouritePiece: null,
-  })
-
-  await setDoc(doc(db, "following", user.uid), {
-    isFollowing: []
   })
 }
 

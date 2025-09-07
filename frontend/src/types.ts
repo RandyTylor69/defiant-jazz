@@ -38,7 +38,6 @@ export type ReviewType = {
   sheetId: string | null; // full name of the sheet music but slugged
   uid: string; // UID provided when the user logs in
   displayName: string;
-  photoURL: string | null | undefined;
   creationDate?: string;
 };
 

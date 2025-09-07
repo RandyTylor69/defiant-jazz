@@ -63,7 +63,6 @@ export default function LogSheetDetail() {
         sheetId: logTarget.sheetId,
         uid: uid,
         displayName: displayName,
-        photoURL: photoURL,
       },
       uid
     );

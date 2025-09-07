@@ -10,6 +10,7 @@ import {
   addDoc,
   updateDoc,
   increment,
+  deleteDoc,
 } from "firebase/firestore";
 
 import { SheetType, ReviewType, LogTargetType, UserType } from "./types";
@@ -110,7 +111,6 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
     uid: review.uid,
     creationDate: new Date().toISOString(),
     displayName: review.displayName,
-    photoURL: review.photoURL,
   });
 
   // 4. Increment sheet review count
@@ -197,5 +197,24 @@ export async function getSheetsTotalAndAnnual(uid: string) {
 }
 
 // -----------------------------
-// Stats
+// Following
 // -----------------------------
+
+
+export async function followUser(currentUid: string, targetUid: string) {
+
+  await setDoc(doc(db, "following", currentUid, "userFollowing", targetUid),{})
+  console.log("Followed!")
+}
+
+export async function isFollowing(currentUid: string, targetUid: string) {
+  const followRef = doc(db, "following", currentUid, "userFollowing", targetUid)
+  const followSnap = await getDoc(followRef)
+  return followSnap.exists()
+}
+
+export async function unfollowUser(currentUid: string, targetUid: string) {
+  const followRef = doc(db, "following", currentUid, "userFollowing", targetUid)
+  await deleteDoc(followRef)
+  console.log("Unfollowed")
+}

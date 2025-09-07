@@ -17,7 +17,8 @@ import { db } from "../../firebase/firebaseConfig.js";
 export default function UserSheets() {
   const [userSheets, setUserSheets] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState(false);
-  const { uid, setLogTarget } = useLayout();
+  const {setLogTarget } = useLayout();
+  const {uid} = useParams()
 
 
   useEffect(() => {

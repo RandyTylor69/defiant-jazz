@@ -2,7 +2,12 @@ import { useLayout } from "../../components/Layout.tsx";
 import { CgMoreO } from "react-icons/cg";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getSheetsTotalAndAnnual } from "../../utils.ts";
+import {
+  followUser,
+  getSheetsTotalAndAnnual,
+  isFollowing,
+  unfollowUser,
+} from "../../utils.ts";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig.js";
 import { LogTargetType, UserType } from "../../types.ts";
@@ -10,10 +15,12 @@ import { LogTargetType, UserType } from "../../types.ts";
 export default function Profile() {
   // ------ user detail
   const { uid } = useParams();
+  const { uid: myUid } = useLayout();
 
   const [sheetsTotal, setSheetsTotal] = useState(0);
   const [sheetsAnnual, setSheetsAnnual] = useState(0);
   const [friendsCount, setFriendsCount] = useState(0);
+  const [currentlyFollowing, setCurrentlyFollowing] = useState(false);
   const [userData, setUserData] = useState<Partial<UserType>>({
     aboutMe: "",
     currentlyPracticing: [],
@@ -24,9 +31,6 @@ export default function Profile() {
   });
 
   useEffect(() => {
-    
-    console.log(uid)
-
     async function fetchUserInfo() {
       const userRef = doc(db, "users", uid as string);
       onSnapshot(userRef, async (userSnap) => {
@@ -76,13 +80,34 @@ export default function Profile() {
 
           {/** ----- 2. username + aboutme ----- */}
           <div className="flex flex-col gap-2 justify-center">
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-baseline">
               <h1 className="text-2xl font-light">{userData.displayName}</h1>
-              <Link to={`edit`}>
-                <p className="text-black/20">
-                  <CgMoreO />
-                </p>
-              </Link>
+              {uid === myUid ? (
+                <Link to={`edit`}>
+                  <p className="text-black/20">
+                    <CgMoreO />
+                  </p>
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    
+                    setCurrentlyFollowing((prev) => !prev);
+                    currentlyFollowing
+                      ? unfollowUser(myUid as string, uid as string)
+                      : followUser(myUid as string, uid as string);
+                  }}
+                  className={`  px-2 text-sm font-light
+                ${
+                  currentlyFollowing
+                    ? `bg-black/30 text-primary`
+                    : `text-black/30 border-[1px] border-black/30`
+                }
+                `}
+                >
+                  {currentlyFollowing? "Following" : "Follow"} 
+                </button>
+              )}
             </div>
             <div className="w-full">
               <p className="text-sm font-light">{userData.aboutMe}</p>
