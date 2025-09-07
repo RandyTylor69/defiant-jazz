@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   followUser,
   getFollowers,
+  getFollowing,
   getSheetsTotalAndAnnual,
   isFollowing,
   unfollowUser,
@@ -23,7 +24,7 @@ export default function Profile() {
   // -- follow stats
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
-  const [followersId, setFollowersId] = useState<null | string[]>(null); // array 
+  const [followersId, setFollowersId] = useState<null | string[]>(null); // array
   const [followingsId, setFollowingsId] = useState<null | string[]>(null); // array
   const [currentlyFollowing, setCurrentlyFollowing] = useState<boolean | null>(
     null
@@ -58,6 +59,11 @@ export default function Profile() {
       const followersResult = await getFollowers(uid as string);
       setFollowersCount(followersResult.followersCount);
       setFollowersId(followersResult.followersIdArray);
+
+      // 1.6. Fetch followings
+      const followingsResult = await getFollowing(uid as string);
+      setFollowingCount(followingsResult.followingsCount)
+      setFollowingsId(followingsResult.followingsIdArray)
 
       // 2. Check if the current user is following this user
       const followingResult = await isFollowing(myUid as string, uid as string);
@@ -157,24 +163,36 @@ export default function Profile() {
           </Link>
 
           {/** number of followers */}
-          <Link to={`followers`} className="hover:underline" state={followersId}>
+          <Link
+            to={`followers`}
+            className="hover:underline"
+            state={followersId}
+          >
             {" "}
             <div className="flex flex-col gap-1 px-4 border-black/20 border-r items-center">
               <h2 className="text-xl font-serif font-bold italic">
                 {followersCount}
               </h2>
-              <p className="text-[0.7rem] font-light text-black/40">FOLLOWERS</p>
+              <p className="text-[0.7rem] font-light text-black/40">
+                FOLLOWERS
+              </p>
             </div>
           </Link>
 
           {/** number of following */}
-          <Link to={`following`} className="hover:underline">
+          <Link
+            to={`following`}
+            className="hover:underline"
+            state={followingsId}
+          >
             {" "}
             <div className="flex flex-col gap-1 px-4 border-black/20 items-center">
               <h2 className="text-xl font-serif font-bold italic">
-                {sheetsAnnual}
+                {followingCount}
               </h2>
-              <p className="text-[0.7rem] font-light text-black/40">FOLLOWING</p>
+              <p className="text-[0.7rem] font-light text-black/40">
+                FOLLOWING
+              </p>
             </div>
           </Link>
         </div>

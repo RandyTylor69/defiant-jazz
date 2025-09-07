@@ -260,26 +260,38 @@ export async function getFollowers(
       collection(db, "following", user.id, "userFollowing")
     );
     // console.log("sub collection size: ",followingSnap.size)
-    
+
     // 4. For each subcollection, perform the check.
     // Using forEach beecause we don't async here.
-    for(const userFollowing of followingSnap.docs){
-
+    for (const userFollowing of followingSnap.docs) {
       if (userFollowing.id === currentUid) {
         // perform the result operations
         followersCount++;
         followersIdArray.push(user.id);
       }
-    };
+    }
   }
 
   return { followersCount, followersIdArray };
 }
 
-export async function getUserDetails(uid:string){
-  const userRef = doc(db, "users", uid)
-  const userSnap = await getDoc(userRef)
-  if(userSnap.exists()){
-    return(userSnap.data())
+export async function getUserDetails(uid: string) {
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    return userSnap.data();
   }
+}
+
+export async function getFollowing(
+  uid: string
+): Promise<{ followingsCount: number; followingsIdArray: string[] }> {
+  let followingsCount = 0;
+  let followingsIdArray: string[] = [];
+  const followingSnap = await getDocs(collection(db, "following", uid, "userFollowing"))
+  for (const followedUserId of followingSnap.docs) {
+    followingsCount ++ ;
+    followingsIdArray.push(followedUserId.id)
+  }
+  return { followingsCount, followingsIdArray };
 }
