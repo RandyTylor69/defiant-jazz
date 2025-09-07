@@ -125,7 +125,7 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
   // 5. Increment user’s total sheet count
   const userRef = doc(db, "users", uid);
   await updateDoc(userRef, {
-    sheetsTotal: increment(1)
+    sheetsTotal: increment(1),
   });
 }
 
@@ -200,21 +200,86 @@ export async function getSheetsTotalAndAnnual(uid: string) {
 // Following
 // -----------------------------
 
-
 export async function followUser(currentUid: string, targetUid: string) {
-
-  await setDoc(doc(db, "following", currentUid, "userFollowing", targetUid),{})
-  console.log("Followed!")
+  // 1. Create the "currentUid" document. This represents the user performing the follow.
+  await setDoc(
+    doc(db, "following", currentUid),
+    {
+      utilString: "util", // neede to validate the document, else it won't get noticed
+      // by firebase when performing a "getDocs" function.
+    },
+    { merge: true }
+  );
+  // 2. On top of the document that just got created, add a "userFollowing" subcollection
+  // to it, and add the targetUid as a document.
+  await setDoc(
+    doc(db, "following", currentUid, "userFollowing", targetUid),
+    {}
+  );
+  console.log("Followed!");
 }
 
 export async function isFollowing(currentUid: string, targetUid: string) {
-  const followRef = doc(db, "following", currentUid, "userFollowing", targetUid)
-  const followSnap = await getDoc(followRef)
-  return followSnap.exists()
+  const followRef = doc(
+    db,
+    "following",
+    currentUid,
+    "userFollowing",
+    targetUid
+  );
+  const followSnap = await getDoc(followRef);
+  return followSnap.exists();
 }
 
 export async function unfollowUser(currentUid: string, targetUid: string) {
-  const followRef = doc(db, "following", currentUid, "userFollowing", targetUid)
-  await deleteDoc(followRef)
-  console.log("Unfollowed")
+  const followRef = doc(
+    db,
+    "following",
+    currentUid,
+    "userFollowing",
+    targetUid
+  );
+  await deleteDoc(followRef);
+  console.log("Unfollowed");
+}
+
+export async function getFollowers(
+  currentUid: string
+): Promise<{ followersCount: number; followersIdArray: string[] }> {
+  let followersCount = 0;
+  let followersIdArray: string[] = [];
+
+  // 1. Get all documents inside "following" (parent collection)
+  const followSnap = await getDocs(collection(db, "following"));
+  // 2. Loop through each document's subcollection "userFollowing" to see if they contain currentUid.
+  // Using for...of because it applies to async.
+
+  for (const user of followSnap.docs) {
+    // 3. Getting the "userFollowing" subcollection.
+    const followingSnap = await getDocs(
+      collection(db, "following", user.id, "userFollowing")
+    );
+    // console.log("sub collection size: ",followingSnap.size)
+    
+    // 4. For each subcollection, perform the check.
+    // Using forEach beecause we don't async here.
+    for(const userFollowing of followingSnap.docs){
+
+      if (userFollowing.id === currentUid) {
+        // perform the result operations
+        followersCount++;
+        followersIdArray.push(user.id);
+      }
+    };
+  }
+
+  return { followersCount, followersIdArray };
+}
+
+export async function getUserDetails(uid:string){
+  const userRef = doc(db, "users", uid)
+  const userSnap = await getDoc(userRef)
+  if(userSnap.exists()){
+    return(userSnap.data())
+  }
 }

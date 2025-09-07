@@ -1,9 +1,10 @@
 import { useLayout } from "../../components/Layout.tsx";
 import { CgMoreO } from "react-icons/cg";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   followUser,
+  getFollowers,
   getSheetsTotalAndAnnual,
   isFollowing,
   unfollowUser,
@@ -19,8 +20,14 @@ export default function Profile() {
 
   const [sheetsTotal, setSheetsTotal] = useState(0);
   const [sheetsAnnual, setSheetsAnnual] = useState(0);
-  const [friendsCount, setFriendsCount] = useState(0);
-  const [currentlyFollowing, setCurrentlyFollowing] = useState(false);
+  // -- follow stats
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [followersId, setFollowersId] = useState<null | string[]>(null); // array 
+  const [followingsId, setFollowingsId] = useState<null | string[]>(null); // array
+  const [currentlyFollowing, setCurrentlyFollowing] = useState<boolean | null>(
+    null
+  );
   const [userData, setUserData] = useState<Partial<UserType>>({
     aboutMe: "",
     currentlyPracticing: [],
@@ -32,6 +39,7 @@ export default function Profile() {
 
   useEffect(() => {
     async function fetchUserInfo() {
+      // 1. Fetch User Info
       const userRef = doc(db, "users", uid as string);
       onSnapshot(userRef, async (userSnap) => {
         if (userSnap.exists()) {
@@ -45,6 +53,15 @@ export default function Profile() {
           setUserData(userSnap.data());
         }
       });
+
+      // 1.5. Fetch followers
+      const followersResult = await getFollowers(uid as string);
+      setFollowersCount(followersResult.followersCount);
+      setFollowersId(followersResult.followersIdArray);
+
+      // 2. Check if the current user is following this user
+      const followingResult = await isFollowing(myUid as string, uid as string);
+      setCurrentlyFollowing(followingResult);
     }
 
     // Fetching user info
@@ -91,7 +108,6 @@ export default function Profile() {
               ) : (
                 <button
                   onClick={() => {
-                    
                     setCurrentlyFollowing((prev) => !prev);
                     currentlyFollowing
                       ? unfollowUser(myUid as string, uid as string)
@@ -105,7 +121,7 @@ export default function Profile() {
                 }
                 `}
                 >
-                  {currentlyFollowing? "Following" : "Follow"} 
+                  {currentlyFollowing ? "Following" : "Follow"}
                 </button>
               )}
             </div>
@@ -116,6 +132,8 @@ export default function Profile() {
         </div>
 
         {/** ----- 3. stats (sheets + this year + friends) ----- */}
+
+        {/** sheets total */}
         <div className="flex flex-row justify-between items-center w-fit ">
           <Link to={`sheets`} className="hover:underline">
             {" "}
@@ -123,23 +141,42 @@ export default function Profile() {
               <h2 className="text-xl font-serif font-bold italic">
                 {sheetsTotal}
               </h2>
-              <p className="text-xs font-light text-black/40">SHEETS</p>
+              <p className="text-[0.7rem] font-light text-black/40">SHEETS</p>
             </div>
           </Link>
 
+          {/** sheets annual */}
           <Link to={`sheetsAnnual`} className="hover:underline">
             {" "}
             <div className="flex flex-col gap-1 px-4 border-black/20 border-r items-center">
               <h2 className="text-xl font-serif font-bold italic">
                 {sheetsAnnual}
               </h2>
-              <p className="text-xs font-light text-black/40">THIS YEAR</p>
+              <p className="text-[0.7rem] font-light text-black/40">ANNUAL</p>
             </div>
           </Link>
-          <div className="flex flex-col gap-1 px-4 border-black/20 items-center ">
-            <h2 className="text-xl font-serif font-bold italic">20</h2>
-            <p className="text-xs font-light text-black/40">FRIENDS</p>
-          </div>
+
+          {/** number of followers */}
+          <Link to={`followers`} className="hover:underline" state={followersId}>
+            {" "}
+            <div className="flex flex-col gap-1 px-4 border-black/20 border-r items-center">
+              <h2 className="text-xl font-serif font-bold italic">
+                {followersCount}
+              </h2>
+              <p className="text-[0.7rem] font-light text-black/40">FOLLOWERS</p>
+            </div>
+          </Link>
+
+          {/** number of following */}
+          <Link to={`following`} className="hover:underline">
+            {" "}
+            <div className="flex flex-col gap-1 px-4 border-black/20 items-center">
+              <h2 className="text-xl font-serif font-bold italic">
+                {sheetsAnnual}
+              </h2>
+              <p className="text-[0.7rem] font-light text-black/40">FOLLOWING</p>
+            </div>
+          </Link>
         </div>
       </section>
 

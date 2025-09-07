@@ -9,6 +9,8 @@ import Profile from "./pages/user/Profile.tsx";
 import UserSheets from "./pages/user/UserSheets.tsx";
 import EditProfile from "./pages/user/EditProfile.tsx";
 import UserSheetsAnnual from "./pages/user/UserSheetsAnnual.tsx";
+import Followers from "./pages/user/Followers.tsx";
+import Following from "./pages/user/Following.tsx";
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
             <Route path="sheets" element={<UserSheets />} />
             <Route path="sheetsAnnual" element={<UserSheetsAnnual />} />
             <Route path="edit" element={<EditProfile />} />
+            <Route path="followers" element={<Followers />} />
+            <Route path="following" element={<Following />} />
           </Route>
 
           <Route path="community">
