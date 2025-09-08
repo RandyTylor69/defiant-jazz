@@ -1,7 +1,7 @@
 import { useLayout } from "../../components/Layout.tsx";
 import { CgMoreO } from "react-icons/cg";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import {
   followUser,
   getFollowers,
@@ -19,6 +19,7 @@ export default function Profile() {
   const { uid } = useParams();
   const { uid: myUid } = useLayout();
 
+  const [loading, setLoading] = useState(false);
   const [sheetsTotal, setSheetsTotal] = useState(0);
   const [sheetsAnnual, setSheetsAnnual] = useState(0);
   // -- follow stats
@@ -39,6 +40,7 @@ export default function Profile() {
   });
 
   useEffect(() => {
+    setLoading(true);
     async function fetchUserInfo() {
       // 1. Fetch User Info
       const userRef = doc(db, "users", uid as string);
@@ -62,18 +64,22 @@ export default function Profile() {
 
       // 1.6. Fetch followings
       const followingsResult = await getFollowing(uid as string);
-      setFollowingCount(followingsResult.followingsCount)
-      setFollowingsId(followingsResult.followingsIdArray)
+      setFollowingCount(followingsResult.followingsCount);
+      setFollowingsId(followingsResult.followingsIdArray);
 
       // 2. Check if the current user is following this user
       const followingResult = await isFollowing(myUid as string, uid as string);
       setCurrentlyFollowing(followingResult);
+     
+      setLoading(false);
     }
 
     // Fetching user info
 
     fetchUserInfo();
-  }, []);
+  }, [uid]);
+
+  if (loading) return <h1>Loading...</h1>;
 
   return (
     <div

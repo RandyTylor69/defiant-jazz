@@ -10,7 +10,8 @@ import { useLayout } from "./Layout.tsx";
 export default function Header() {
   const [isSearching, setIsSearching] = useState(false);
   const { currentUser, userLoggedIn } = useAuth();
-  const { setIsLogging, setIsAnyLogWindowOpen, isAnyLogWindowOpen } = useLayout();
+  const { setIsLogging, setIsAnyLogWindowOpen, isAnyLogWindowOpen } =
+    useLayout();
 
   return (
     <header className="w-full max-w-[55rem]">
@@ -45,7 +46,6 @@ export default function Header() {
 
         {/** ---- rightnav div ------- */}
 
-
         {isSearching ? (
           <SearchBar setIsSearching={setIsSearching} />
         ) : (
@@ -53,7 +53,6 @@ export default function Header() {
           <div className="flex flex-row gap-4">
             <button
               className="btn-tertiary"
-              onClick={() => setIsSearching(true)}
             >
               <FaSearch />
             </button>
