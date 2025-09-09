@@ -5,6 +5,7 @@ import { RxCross1 } from "react-icons/rx";
 import { FaSearch } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { slugify } from "../../utils.ts";
+import { useLayout } from "../Layout.tsx";
 
 type SearchResultType = {
   ns: number;
@@ -26,6 +27,7 @@ export default function LogSheetProfile({
 }) {
   const [searchParams, setSearchParams] = useState("");
   const [results, setResults] = useState<SearchResultType[] | null>(null);
+  const { setIsAnyLogWindowOpen } = useLayout();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -49,7 +51,7 @@ export default function LogSheetProfile({
   }, [searchParams]);
 
   return (
-    <div className="inset-0 absolute bg-black/80 backdrop-blur-md z-[999] ">
+    <div className="inset-0 absolute bg-black/80 backdrop-blur-md z-[999] h-[100vh]">
       <div
         className="absolute w-[90vw] max-w-[30rem] h-fit p-4 border-black/20 border-2
                 bg-primary text-black/70
@@ -63,7 +65,10 @@ export default function LogSheetProfile({
           </h1>
           <h2
             className="absolute top-4 right-4 text-black/40 cursor-pointer"
-            onClick={() => setIsLoggingProfile(false)}
+            onClick={() => {
+              setIsLoggingProfile(false);
+              setIsAnyLogWindowOpen(false);
+            }}
           >
             <RxCross1 />
           </h2>
@@ -118,11 +123,10 @@ export default function LogSheetProfile({
                         "Adding the following piece to the favourite piece state:",
                         clonedLogTarget
                       );
-                      
                     }
 
-                    // add the cloned logTarget to currently practicing. 
-                    
+                    // add the cloned logTarget to currently practicing.
+
                     if (isLoggingCurrentlyPracticing) {
                       setCurrentlyPracticing((prev: any) => [
                         ...prev,
@@ -130,7 +134,7 @@ export default function LogSheetProfile({
                       ]);
                     }
                     setIsLoggingFavourite(false);
-                    setIsLoggingCurrentlyPracticing(false)
+                    setIsLoggingCurrentlyPracticing(false);
                     setIsLoggingProfile(false);
                   }}
                 >

@@ -9,12 +9,16 @@ type SearchItem = {
 };
 
 export default function Search() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SearchItem[]>([]);
   const { params } = useParams<{ params: string }>(); // Typing the content of the object returned by useParams()
+<<<<<<< HEAD
   const { setLogTarget } = useLayout();
+=======
+  const { setLogTarget} = useLayout();
+>>>>>>> c3810d67bf1755192cd0943c83ce88cbfa3e734d
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     async function fetchData() {
       if (!params) return;
        const res = await fetch(
@@ -25,17 +29,23 @@ export default function Search() {
       
       const data = await res.json();
 
+<<<<<<< HEAD
       data.query.search != null && setResults(data.query.search); 
       setLoading(false)
+=======
+      data.query.search != null && setResults(data.query.search);
+      //setIsSearching(false)
+      setLoading(false);
+>>>>>>> c3810d67bf1755192cd0943c83ce88cbfa3e734d
     }
     fetchData();
   }, []);
 
-  if(loading) return <h1>Loading</h1>
+  if (loading) return <h1>Loading</h1>;
   return (
     <div
-      className="h-fit w-full
-    flex flex-col gap-6"
+      className={`h-fit w-full mt-10 md:mt-0 
+    flex flex-col gap-6`}
     >
       <p className="text-sm uppercase font-light">
         Search results for "{params}".{" "}
@@ -47,7 +57,7 @@ export default function Search() {
       </p>
       <ul className="">
         {results.length ? (
-          results.map((item) => {
+          results.map((item, index) => {
             // manually extract the composer name and the title.
             const composer = item.title.includes("(")
               ? item.title.split("(")[1].split(")")[0].trim()
@@ -56,7 +66,7 @@ export default function Search() {
             const sheetId = slugify(item.title);
             return (
               <Link
-              key={sheetId}
+                key={index}
                 to={`/sheet/${sheetId}`}
                 state={{ title, composer, sheetId }}
                 onClick={() =>
@@ -68,10 +78,7 @@ export default function Search() {
                   })
                 }
               >
-                <li
-                  className="py-2 mb-6 text-black/70 border-b-[2px] border-black/10"
-                  key={item.title}
-                >
+                <li className="py-2 mb-6 text-black/70 border-b-[2px] border-black/10">
                   <h1 className="text-xl font-bold ">{item.title}</h1>
                 </li>
               </Link>

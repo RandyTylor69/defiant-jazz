@@ -18,6 +18,7 @@ export default function Layout() {
   const [isLoggingFinished, setIsLoggingFinished] = useState(false);
   const [isEditingLogDetail, setIsEditingLogDetail] = useState(false);
   const [isEditingLogFinished, setIsEditingLogFinished] = useState(false);
+  const [isAnyLogWindowOpen, setIsAnyLogWindowOpen] = useState(false)
   const auth = getAuth();
   // getting fields of the auth object;
   const isLoggedIn = auth.currentUser;
@@ -39,18 +40,20 @@ export default function Layout() {
         setIsLoggingFinished,
         setIsEditingLogDetail,
         setIsEditingLogFinished,
+        setIsAnyLogWindowOpen,
         isLoggingFinished,
         isEditingLogFinished,
+        isLogging,
+        isAnyLogWindowOpen,
         logTarget,
         setLogTarget,
         uid,
         displayName: displayName || "",
         photoURL: photoURL || "",
         isLoggedIn,
-        auth
+        auth,
       }}
     >
-      
       {isLogging && <LogSheet />}
       {isLoggingDetail && <LogSheetDetail />}
       {isLoggingFinished && <LogFinish />}
@@ -58,9 +61,10 @@ export default function Layout() {
       {isEditingLogFinished && <EditLogFinish />}
 
       <div
-        className="min-h-screen h-fit bg-primary font-HKGrotesk p-4 
+        className={`min-h-screen h-fit bg-primary font-HKGrotesk p-4 
         flex flex-col justifty-center items-center gap-6 md:gap-40
-        "
+                ${isAnyLogWindowOpen && `h-[100vh] overflow-hidden`}
+        `}
       >
         <Header />
 

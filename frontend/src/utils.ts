@@ -9,9 +9,11 @@ import {
   setDoc,
   addDoc,
   updateDoc,
+  increment,
+  deleteDoc,
 } from "firebase/firestore";
 
-import { SheetType, ReviewType, LogTargetType } from "./types";
+import { SheetType, ReviewType, LogTargetType, UserType } from "./types";
 
 // -----------------------------
 // Helpers
@@ -109,7 +111,6 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
     uid: review.uid,
     creationDate: new Date().toISOString(),
     displayName: review.displayName,
-    photoURL: review.photoURL,
   });
 
   // 4. Increment sheet review count
@@ -121,18 +122,11 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
     { merge: true }
   );
 
-  console.log(reviewRef);
-
   // 5. Increment user’s total sheet count
   const userRef = doc(db, "users", uid);
-  const userSnap = await getDoc(userRef);
-  await setDoc(
-    userRef,
-    {
-      sheetsTotal: (userSnap.data()?.sheetsTotal || 0) + 1,
-    },
-    { merge: true }
-  );
+  await updateDoc(userRef, {
+    sheetsTotal: increment(1),
+  });
 }
 
 export async function updateReview(
@@ -143,15 +137,39 @@ export async function updateReview(
   await updateDoc(reviewRef, updatedReview);
 }
 
+export async function getPlayTime(
+  sheetId: string,
+  uid: string
+): Promise<number | null> {
+  const reviewQuery = query(
+    collection(db, "reviews"),
+    where("uid", "==", uid),
+    where("sheetId", "==", sheetId)
+  );
+  const reviewSnap = await getDocs(reviewQuery);
+  if (!reviewSnap.empty) {
+    const reviewDoc = reviewSnap.docs[0];
+    const { practicedSince } = reviewDoc.data();
+    const startDate = new Date(practicedSince);
+    const endDate = new Date();
+    const diffInMs = endDate.valueOf() - startDate.valueOf();
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    //console.log(Math.floor(diffInDays));
+    return Math.floor(diffInDays);
+  }
+  return null;
+}
+
 // -----------------------------
 // Stats
 // -----------------------------
 
 // returns total reviewed sheets and how many reviewed this year
-export async function getSheets(uid: string) {
+export async function getSheetsTotalAndAnnual(uid: string) {
   const userRef = doc(db, "users", uid);
   const userSnap = await getDoc(userRef);
 
+  // count reviews in total
   const sheetsTotalCount = userSnap.data()?.sheetsTotal || 0;
 
   // count reviews in current year
@@ -179,5 +197,101 @@ export async function getSheets(uid: string) {
 }
 
 // -----------------------------
-// Stats
+// Following
 // -----------------------------
+
+export async function followUser(currentUid: string, targetUid: string) {
+  // 1. Create the "currentUid" document. This represents the user performing the follow.
+  await setDoc(
+    doc(db, "following", currentUid),
+    {
+      utilString: "util", // neede to validate the document, else it won't get noticed
+      // by firebase when performing a "getDocs" function.
+    },
+    { merge: true }
+  );
+  // 2. On top of the document that just got created, add a "userFollowing" subcollection
+  // to it, and add the targetUid as a document.
+  await setDoc(
+    doc(db, "following", currentUid, "userFollowing", targetUid),
+    {}
+  );
+  console.log("Followed!");
+}
+
+export async function isFollowing(currentUid: string, targetUid: string) {
+  const followRef = doc(
+    db,
+    "following",
+    currentUid,
+    "userFollowing",
+    targetUid
+  );
+  const followSnap = await getDoc(followRef);
+  return followSnap.exists();
+}
+
+export async function unfollowUser(currentUid: string, targetUid: string) {
+  const followRef = doc(
+    db,
+    "following",
+    currentUid,
+    "userFollowing",
+    targetUid
+  );
+  await deleteDoc(followRef);
+  console.log("Unfollowed");
+}
+
+export async function getFollowers(
+  currentUid: string
+): Promise<{ followersCount: number; followersIdArray: string[] }> {
+  let followersCount = 0;
+  let followersIdArray: string[] = [];
+
+  // 1. Get all documents inside "following" (parent collection)
+  const followSnap = await getDocs(collection(db, "following"));
+  // 2. Loop through each document's subcollection "userFollowing" to see if they contain currentUid.
+  // Using for...of because it applies to async.
+
+  for (const user of followSnap.docs) {
+    // 3. Getting the "userFollowing" subcollection.
+    const followingSnap = await getDocs(
+      collection(db, "following", user.id, "userFollowing")
+    );
+    // console.log("sub collection size: ",followingSnap.size)
+
+    // 4. For each subcollection, perform the check.
+    // Using forEach beecause we don't async here.
+    for (const userFollowing of followingSnap.docs) {
+      if (userFollowing.id === currentUid) {
+        // perform the result operations
+        followersCount++;
+        followersIdArray.push(user.id);
+      }
+    }
+  }
+
+  return { followersCount, followersIdArray };
+}
+
+export async function getUserDetails(uid: string) {
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    return userSnap.data();
+  }
+}
+
+export async function getFollowing(
+  uid: string
+): Promise<{ followingsCount: number; followingsIdArray: string[] }> {
+  let followingsCount = 0;
+  let followingsIdArray: string[] = [];
+  const followingSnap = await getDocs(collection(db, "following", uid, "userFollowing"))
+  for (const followedUserId of followingSnap.docs) {
+    followingsCount ++ ;
+    followingsIdArray.push(followedUserId.id)
+  }
+  return { followingsCount, followingsIdArray };
+}

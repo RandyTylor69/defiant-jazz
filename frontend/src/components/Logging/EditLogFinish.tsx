@@ -4,10 +4,8 @@ import { RxCross1 } from "react-icons/rx";
 import { useEffect, useState } from "react";
 
 export default function LogFinish() {
-  const {
-    setIsEditingLogFinished,
-    logTarget,
-  } = useLayout();
+  const { setIsEditingLogFinished, logTarget, setIsAnyLogWindowOpen } =
+    useLayout();
   const [show, setShow] = useState(false);
   useEffect(() => {
     setTimeout(() => setShow(true), 50);
@@ -28,7 +26,11 @@ export default function LogFinish() {
         <Link
           to={`/sheet/${logTarget.sheetId}`}
           className="underline italic"
-          state={{ title: logTarget.title, composer: logTarget.composer, sheetId: logTarget.sheetId }}
+          state={{
+            title: logTarget.title,
+            composer: logTarget.composer,
+            sheetId: logTarget.sheetId,
+          }}
           onClick={() => setIsEditingLogFinished(false)}
         >
           {logTarget.title}
@@ -37,7 +39,12 @@ export default function LogFinish() {
         has been updated from your history!
       </p>
 
-      <button onClick={() => setIsEditingLogFinished(false)}>
+      <button
+        onClick={() => {
+          setIsEditingLogFinished(false);
+          setIsAnyLogWindowOpen(false);
+        }}
+      >
         <RxCross1 />
       </button>
     </div>

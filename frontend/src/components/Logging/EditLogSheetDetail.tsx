@@ -8,7 +8,7 @@ import { db } from "../../firebase/firebaseConfig.js";
 
 export default function EditLogSheetDetail() {
   const {
-    setIsLoggingFinished,
+    setIsAnyLogWindowOpen,
     setIsEditingLogDetail,
     logTarget,
     uid,
@@ -48,7 +48,6 @@ export default function EditLogSheetDetail() {
       const reviewSnapshot = await getDocs(reviewQuery);
 
       reviewSnapshot.forEach((review) => {
-        // console.log(review.id);
         setReviewId(review.id);
         setPracticedSince(review.data().practicedSince);
         setContent(review.data().content);
@@ -112,6 +111,7 @@ export default function EditLogSheetDetail() {
           className="absolute right-4 top-4 cursor-pointer text-black/40 "
           onClick={() => {
             setIsEditingLogDetail(false);
+            setIsAnyLogWindowOpen(false);
           }}
         >
           <RxCross1 />

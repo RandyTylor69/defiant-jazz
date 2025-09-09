@@ -17,7 +17,8 @@ import { db } from "../../firebase/firebaseConfig.js";
 export default function UserSheetsAnnual() {
   const [userSheets, setUserSheets] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState(false);
-  const { uid, setLogTarget } = useLayout();
+  const { setLogTarget } = useLayout();
+  const { uid } = useParams();
 
   useEffect(() => {
     setLoading(true);
@@ -59,8 +60,6 @@ export default function UserSheetsAnnual() {
     }
     fetchUserSheets();
   }, []);
-
-  console.log(userSheets);
 
   if (loading) return <h1>Loading...</h1>;
   return (
