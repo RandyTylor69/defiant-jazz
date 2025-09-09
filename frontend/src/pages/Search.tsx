@@ -12,22 +12,31 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SearchItem[]>([]);
   const { params } = useParams<{ params: string }>(); // Typing the content of the object returned by useParams()
+<<<<<<< HEAD
+  const { setLogTarget } = useLayout();
+=======
   const { setLogTarget} = useLayout();
+>>>>>>> c3810d67bf1755192cd0943c83ce88cbfa3e734d
   useEffect(() => {
     setLoading(true);
     async function fetchData() {
       if (!params) return;
-      //setIsSearching(true)
-      const res = await fetch(
+       const res = await fetch(
         `${process.env.REACT_APP_SERVER_ROUTE}/api/imslp?q=${encodeURIComponent(
           params
         )}`
       );
+      
       const data = await res.json();
 
+<<<<<<< HEAD
+      data.query.search != null && setResults(data.query.search); 
+      setLoading(false)
+=======
       data.query.search != null && setResults(data.query.search);
       //setIsSearching(false)
       setLoading(false);
+>>>>>>> c3810d67bf1755192cd0943c83ce88cbfa3e734d
     }
     fetchData();
   }, []);
