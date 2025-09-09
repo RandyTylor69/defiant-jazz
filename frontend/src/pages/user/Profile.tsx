@@ -228,7 +228,9 @@ export default function Profile() {
           </Link>
         ) : (
           <p className="text-sm font-light text-black/40">
-            You haven't set your favourite piece yet.
+            {myUid === uid
+              ? "You haven't set your favourite piece yet."
+              : "They haven't set their favourite piece yet."}
           </p>
         )}
       </section>
@@ -262,7 +264,9 @@ export default function Profile() {
           )
         ) : (
           <p className="text-sm font-light text-black/40">
-            You haven't set your favourite piece yet.
+            {myUid === uid
+              ? "You aren't practicing any pieces at the moment."
+              : "They aren't practicing any pieces at the moment."}
           </p>
         )}
       </section>

@@ -103,7 +103,7 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
   }
 
   // 3. Add review
-  const reviewRef = await addDoc(collection(db, "reviews"), {
+  await addDoc(collection(db, "reviews"), {
     practicedSince: review.practicedSince,
     rating: review.rating,
     content: review.content,
@@ -111,6 +111,7 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
     uid: review.uid,
     creationDate: new Date().toISOString(),
     displayName: review.displayName,
+    likes:0
   });
 
   // 4. Increment sheet review count

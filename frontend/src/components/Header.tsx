@@ -53,6 +53,7 @@ export default function Header() {
           <div className="flex flex-row gap-4">
             <button
               className="btn-tertiary"
+              onClick={()=>setIsSearching(prev=>!prev)}
             >
               <FaSearch />
             </button>

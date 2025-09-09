@@ -1,5 +1,4 @@
 import { RxCross1 } from "react-icons/rx";
-import { TfiAngleLeft } from "react-icons/tfi";
 import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
 import { updateReview } from "../../utils.ts";
