@@ -1,12 +1,12 @@
 import { FaSearch } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-import { useState} from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function SearchBar({ setIsSearching }) {
   const [searchParams, setSearchParams] = useState("");
   const navigate = useNavigate();
-  function handleChange(value:string) {
+  function handleChange(value: string) {
     setSearchParams(value);
   }
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -14,7 +14,7 @@ export default function SearchBar({ setIsSearching }) {
 
     navigate(`search/${searchParams}`);
     window.location.reload();
-    setIsSearching(false)
+    setIsSearching(false);
   }
 
   return (

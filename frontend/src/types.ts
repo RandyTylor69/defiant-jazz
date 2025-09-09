@@ -39,6 +39,7 @@ export type ReviewType = {
   uid: string; // UID provided when the user logs in
   displayName: string;
   creationDate?: string;
+  likes: number;
 };
 
 export type UserType = {
@@ -69,3 +70,4 @@ export type SearchResultType = {
   size: number;
   wordcount: number;
 };
+
