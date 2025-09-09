@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation, useParams, Link } from "react-router-dom";
-import {
-  collection,
-  doc,
-  DocumentData,
-  getDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
+import { DocumentData } from "firebase/firestore";
+import { auth, db } from "../firebase/firebaseConfig";
 import { useLayout } from "../components/Layout.tsx";
-import { updateReview } from "../utils.ts";
+import {
+  fetchUserReview,
+  updateReview,
+  fetchAllReviews,
+  toggleRating,
+} from "../utils.ts";
 import { ReviewType } from "../types.ts";
-import { FaRegUserCircle } from "react-icons/fa";
+import { FaThumbsUp } from "react-icons/fa6";
+import Review from "../components/Review.tsx";
 
 export default function Sheet() {
   const location = useLocation();
@@ -54,95 +52,32 @@ export default function Sheet() {
     // ---> 3. Set logging target for this sheet.
     // ___________________________________________
 
-    async function fetchUserReview() {
-      const reviewQuery = query(
-        // location: fetching from the "reviews" collection
-        collection(db, "reviews"),
-        // fetch the review from the user
-        where("uid", "==", uid),
-        where("sheetId", "==", sheetId)
+    // 1.
+    if (uid)
+      fetchUserReview(
+        uid,
+        sheetId as string,
+        setHasReviewed,
+        setReviewId,
+        setRatingBg
       );
+    // 2.
+    fetchAllReviews(sheetId as string, setAuthorProfileURLs, setReviews);
 
-      const reviewSnapshot = await getDocs(reviewQuery);
-      if (reviewSnapshot.empty) {
-        console.log("The user hasn't reviewed this sheet yet.");
-      } else {
-        setHasReviewed(true);
-
-        reviewSnapshot.forEach((review) => {
-          setReviewId(review.id);
-          setRatingBg((prev) => {
-            return prev.map((i) => ({
-              ...i,
-              on: i.id < review.data().rating * 2 ? true : false,
-            }));
-          });
-        });
-      }
-    }
-
-    async function fetchAllReviews() {
-      const reviewsQuery = query(
-        // location: fetching from the "reviews" collection
-        collection(db, "reviews"),
-        // fetch all reviews.
-        where("sheetId", "==", sheetId)
-      );
-
-      const reviewsSnapshot = await getDocs(reviewsQuery);
-      if (reviewsSnapshot.empty) {
-        console.log("No one has reviewed this sheet yet.");
-      } else {
-        reviewsSnapshot.forEach(async (review) => {
-          // We will do 2 thingw with each review fetched.
-          // 1. Get the author's profile picture.
-          const { uid: authorId } = review.data();
-          let authorProfileURL = null;
-          const authorRef = doc(db, "users", authorId);
-          const authorSnap = await getDoc(authorRef);
-          if (authorSnap.exists()) {
-            authorProfileURL = authorSnap.data().photoURL;
-          }
-
-          if (!authorProfileURL) return;
-          setAuthorProfileURLs((prev) => [...prev, authorProfileURL]);
-          // 2. Add the reviwe into the reviews state.
-          setReviews((prev) => [...prev, review.data() as ReviewType]);
-        });
-      }
-    }
-
-    if (uid) fetchUserReview();
-    fetchAllReviews();
-
+    // 3.
     // set logTarget's sheetId field when the window reloads.
     // else react will forget what logTarget has.
     if (!sheetId) return;
     setLogTarget((prev) => ({ ...prev, sheetId, title, composer }));
   }, []);
 
-  function toggleRating(toggleID: number) {
-    // Click on a half-star. All its previous ones (include itself) should light up.
-    // All its preceding ones should dim out.
-
-    setRatingBg((prev) =>
-      prev.map((i) => ({ ...i, on: i.id > toggleID ? false : true }))
-    );
-
-    const newRating = (toggleID + 1) / 2;
-
-    if (hasReviewed) {
-      updateReview(reviewId, { rating: newRating });
-    }
-  }
-
-  const ratingBgMapped = ratingBg.map((item) => (
+  const ratingBgMapped = ratingBg.map((item, index) => (
     <div
-      key={item.id}
+      key={index}
       className={`w-[1.2rem] h-full cursor-pointer
     ${item.on ? "bg-amber-600" : "bg-black/10"} `}
       onClick={() => {
-        toggleRating(item.id);
+        toggleRating(item.id, setRatingBg, hasReviewed, reviewId);
       }}
     ></div>
   ));
@@ -210,42 +145,13 @@ export default function Sheet() {
         <ul className="w-full h-fit flex flex-col gap-4 ">
           {reviews.map((review, index) => {
             return (
-              <li
-                className="w-full h-fit
-            flex flex-col md:flex-row gap-6
-             pb-4"
-                key={review.uid}
-              >
-                {/** --- div with user info --- */}
-                <Link
-                  to={`/${review.uid}`}
-                  className="w-full md:max-w-[5rem]
-                 flex md:flex-col gap-2 "
-                >
-                  <img
-                    className="size-12 object-cover rounded-[50%]"
-                    src={`${authorProfileURLs[index]}`}
-                    alt="user profile picture"
-                  />
-
-                  <p className="text-sm text-black/70 ">
-                    {review.displayName ? review.displayName : "Anonymous"}
-                  </p>
-                </Link>
-                {/** --- div with comment --- */}
-                <article
-                  className="w-full fit gap-2
-                flex flex-col justify-between "
-                >
-                  <div className="w-full flex justify-between text-black/30 text-sm">
-                    <p>{review.rating}/5</p>
-                    <p>{review.creationDate?.slice(0, -14)}</p>
-                  </div>
-                  <p className="text-black/70 border-black/10 border-b-2 pb-4">
-                    {review.content}
-                  </p>
-                </article>
-              </li>
+              <Review
+                reviewData={review.reviewData}
+                reviewId={review.reviewId}
+                index={index}
+                authorProfileURLs={authorProfileURLs}
+                key={index}
+              />
             );
           })}
         </ul>

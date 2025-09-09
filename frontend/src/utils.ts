@@ -11,9 +11,11 @@ import {
   updateDoc,
   increment,
   deleteDoc,
+  DocumentData,
 } from "firebase/firestore";
 
 import { SheetType, ReviewType, LogTargetType, UserType } from "./types";
+import { Dispatch, SetStateAction } from "react";
 
 // -----------------------------
 // Helpers
@@ -111,7 +113,7 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
     uid: review.uid,
     creationDate: new Date().toISOString(),
     displayName: review.displayName,
-    likes:0
+    likes: 0,
   });
 
   // 4. Increment sheet review count
@@ -159,6 +161,138 @@ export async function getPlayTime(
     return Math.floor(diffInDays);
   }
   return null;
+}
+
+export async function fetchUserReview(
+  uid: string,
+  sheetId: string,
+  setHasReviewed: Dispatch<SetStateAction<boolean>>,
+  setReviewId: Dispatch<SetStateAction<string>>,
+  setRatingBg: Dispatch<SetStateAction<any>>
+) {
+  const reviewQuery = query(
+    // location: fetching from the "reviews" collection
+    collection(db, "reviews"),
+    // fetch the review from the user
+    where("uid", "==", uid),
+    where("sheetId", "==", sheetId)
+  );
+
+  const reviewSnapshot = await getDocs(reviewQuery);
+  if (reviewSnapshot.empty) {
+    console.log("The user hasn't reviewed this sheet yet.");
+  } else {
+    setHasReviewed(true);
+
+    reviewSnapshot.forEach((review) => {
+      setReviewId(review.id);
+      // Im not typing this, I'm not doing it boss.
+      // but you can see its type in Sheet.tsx
+      setRatingBg((prev) => {
+        return prev.map((i) => ({
+          ...i,
+          on: i.id < review.data().rating * 2 ? true : false,
+        }));
+      });
+    });
+  }
+}
+
+export async function fetchAllReviews(
+  sheetId: string,
+  setAuthorProfileURLs: Dispatch<SetStateAction<string[]>>,
+  setReviews: Dispatch<SetStateAction<DocumentData[]>>
+) {
+  const reviewsQuery = query(
+    // location: fetching from the "reviews" collection
+    collection(db, "reviews"),
+    // fetch all reviews.
+    where("sheetId", "==", sheetId)
+  );
+
+  const reviewsSnapshot = await getDocs(reviewsQuery);
+  if (reviewsSnapshot.empty) {
+    console.log("No one has reviewed this sheet yet.");
+  } else {
+    reviewsSnapshot.forEach(async (review) => {
+      // We will do 2 thingw with each review fetched.
+      // 1. Get the author's profile picture.
+      const { uid: authorId } = review.data();
+      let authorProfileURL = null;
+      const authorRef = doc(db, "users", authorId);
+      const authorSnap = await getDoc(authorRef);
+      if (authorSnap.exists()) {
+        authorProfileURL = authorSnap.data().photoURL;
+      }
+
+      if (!authorProfileURL) return;
+      setAuthorProfileURLs((prev) => [...prev, authorProfileURL]);
+      // 2. Add the reviwe into the reviews state.
+      setReviews((prev) => [
+        ...prev,
+        { reviewData: review.data() as ReviewType, reviewId: review.id },
+      ]);
+    });
+  }
+}
+
+export function toggleRating(
+  toggleID: number,
+  setRatingBg: Dispatch<SetStateAction<any>>,
+  hasReviewed: boolean,
+  reviewId: string
+) {
+  // Click on a half-star. All its previous ones (include itself) should light up.
+  // All its preceding ones should dim out.
+
+  setRatingBg((prev) =>
+    prev.map((i) => ({ ...i, on: i.id > toggleID ? false : true }))
+  );
+
+  const newRating = (toggleID + 1) / 2;
+
+  if (hasReviewed) {
+    updateReview(reviewId, { rating: newRating });
+  }
+}
+
+export async function getLikesFromReview(reviewId: string) {
+  const reviewRef = doc(db, "reviews", reviewId);
+  const reviewSnap = await getDoc(reviewRef);
+  if (reviewSnap.exists()) {
+    return reviewSnap.data().likes;
+  }
+}
+
+export async function getIfLikedReview(reviewId: string, uid: string) {
+  // Returns a boolean that indicates if the user has liked the review.
+  const reviewRef = doc(db, "likes", uid, "likedReviews", reviewId);
+  const reviewSnap = await getDoc(reviewRef);
+  return reviewSnap.exists();
+}
+
+export async function likeReview(reviewId: string, uid: string) {
+  // Update likes field for the review doc
+  const reviewRef = doc(db, "reviews", reviewId);
+  await updateDoc(reviewRef, {
+    likes: increment(1),
+  });
+
+  // Update the "likedReviews" subcollection for the "user" document of the "likes" collection.
+  const likeRef = doc(db, "likes", uid, "likedReviews", reviewId);
+  await setDoc(likeRef, {
+    merge: true,
+  });
+}
+
+export async function unlikeReview(reviewId: string, uid: string) {
+  const reviewRef = doc(db, "reviews", reviewId);
+  await updateDoc(reviewRef, {
+    likes: increment(-1),
+  });
+  // Update the "likedReviews" subcollection for the "user" document of the "likes" collection.
+  const likeRef = doc(db, "likes", uid, "likedReviews", reviewId);
+  await deleteDoc(likeRef)
 }
 
 // -----------------------------
@@ -289,10 +423,12 @@ export async function getFollowing(
 ): Promise<{ followingsCount: number; followingsIdArray: string[] }> {
   let followingsCount = 0;
   let followingsIdArray: string[] = [];
-  const followingSnap = await getDocs(collection(db, "following", uid, "userFollowing"))
+  const followingSnap = await getDocs(
+    collection(db, "following", uid, "userFollowing")
+  );
   for (const followedUserId of followingSnap.docs) {
-    followingsCount ++ ;
-    followingsIdArray.push(followedUserId.id)
+    followingsCount++;
+    followingsIdArray.push(followedUserId.id);
   }
   return { followingsCount, followingsIdArray };
 }
