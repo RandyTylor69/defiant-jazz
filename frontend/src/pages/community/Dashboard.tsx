@@ -96,16 +96,35 @@ export default function Dashboard() {
         <div
           className="w-full h-fit
                 flex flex-col gap-4"
-        >
+        > 
+        
           {followingReviews.map((review, index) => (
             <article
               className="flex flex-col gap-1 py-2
         text-sm border-b-2 border-black/10"
               key={index}
             >
-              <h1 className="text-xl font-semibold font-serif">{review.sheetTitle}</h1>
-              <p className="text-sm font-light text-black/40">Reviewed by {review.data.displayName}</p>
-              <p>{review.data.content}</p>
+              <Link to={`/sheet/${review.reviewDoc.sheetId}`}
+                key={index}
+                className="hover:underline"
+                state={{
+                  title: review.sheetDoc.title,
+                  composer: review.sheetDoc.composer,
+                  sheetId: review.sheetDoc.sheetId,
+                }}
+                onClick={() =>
+                  setLogTarget({
+                    fullName: review.sheetDoc.fullName,
+                    title: review.sheetDoc.title,
+                    composer: review.sheetDoc.composer,
+                    sheetId: review.sheetDoc.sheetId,
+                  })
+                }>
+                  <h1 className="text-xl font-semibold font-serif">{review.sheetDoc.title}</h1>
+                </Link>
+              
+              <p className="text-sm font-light text-black/40">Reviewed by {review.reviewDoc.displayName}</p>
+              <p>{review.reviewDoc.content}</p>
             </article>
           ))}
         </div>

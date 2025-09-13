@@ -95,7 +95,7 @@ export default function Sheet() {
             flex flex-col gap-6 text-black/70"
         >
           <h1 className="text-2xl md:text-4xl">{title}</h1>
-          <p>{composer}</p>
+          <p>{logTarget.composer}</p>
         </article>
         <div className="flex flex-col h-[8rem] w-full max-w-[20rem] bg-secondary">
           <div

@@ -33,7 +33,8 @@ export async function getCommunityFavourites(minReviewCount: number) {
 export async function getFollowingReviews(uid: string) {
   // ---- returns up to 10 most recent reviews from the user's following list.
   // returned format: {
-  //    sheetTitle, data
+  //    sheetDoc, 
+  //    reviewDoc
   // }
   const { followersIdArray } = await getFollowers(uid);
 
@@ -50,11 +51,11 @@ export async function getFollowingReviews(uid: string) {
     reviewsSnap.docs.map(async (reviewDoc) => {
       const sheetRef = doc(db, "sheets", reviewDoc.data().sheetId);
       const sheetSnap = await getDoc(sheetRef);
-      let sheetTitle;
-      if (sheetSnap.exists()) sheetTitle = sheetSnap.data().title;
+      let sheetDoc;
+      if (sheetSnap.exists()) sheetDoc = sheetSnap.data()
       return {
-        sheetTitle: sheetTitle,
-        data: reviewDoc.data(),
+        sheetDoc: sheetDoc,
+        reviewDoc:reviewDoc.data()
       };
     })
   );
