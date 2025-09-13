@@ -1,4 +1,13 @@
-import { collection, DocumentData, getDocs, orderBy, query, where } from "firebase/firestore";
+import {
+  collection,
+  DocumentData,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  where,
+  doc,
+} from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 import { getFollowers } from "../../utils.ts";
 
@@ -23,17 +32,31 @@ export async function getCommunityFavourites(minReviewCount: number) {
 
 export async function getFollowingReviews(uid: string) {
   // ---- returns up to 10 most recent reviews from the user's following list.
+  // returned format: {
+  //    sheetTitle, data
+  // }
+  const { followersIdArray } = await getFollowers(uid);
 
-  const {followersIdArray} = await getFollowers(uid)
-  
   // the query will be sorted in descending time order, meaning newest first.
   const reviewsQuery = query(
     collection(db, "reviews"),
     where("uid", "in", followersIdArray),
     orderBy("fireBaseTimestamp", "desc")
-  )
+  );
 
-  const reviewsSnap = await getDocs(reviewsQuery)
-  const docs = reviewsSnap.docs.map(doc=>doc.data())
-  return docs.slice(0, 10)
+  const reviewsSnap = await getDocs(reviewsQuery);
+
+  const docs = await Promise.all(
+    reviewsSnap.docs.map(async (reviewDoc) => {
+      const sheetRef = doc(db, "sheets", reviewDoc.data().sheetId);
+      const sheetSnap = await getDoc(sheetRef);
+      let sheetTitle;
+      if (sheetSnap.exists()) sheetTitle = sheetSnap.data().title;
+      return {
+        sheetTitle: sheetTitle,
+        data: reviewDoc.data(),
+      };
+    })
+  );
+  return docs.slice(0, 10);
 }

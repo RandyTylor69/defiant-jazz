@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { weeklyPopular } from "../../data";
 import { getCommunityFavourites, getFollowingReviews } from "./CommUtils.ts";
-import { ReviewType, SheetType } from "../../types.ts";
 import { Link } from "react-router-dom";
 import { DocumentData } from "firebase/firestore";
 import { slugify } from "../../utils.ts";
 import { useLayout } from "../../components/Layout.tsx";
+import { ReviewType } from "../../types.ts";
 
 export default function Dashboard() {
   // temp mapping for "popular this week"
@@ -14,7 +14,9 @@ export default function Dashboard() {
   const [communityFavourites, setCommunityFavourites] = useState<
     DocumentData[]
   >([]);
-  const [followingReviews, setFollowingReviews] = useState<any>([]);
+  const [followingReviews, setFollowingReviews] = useState<
+   DocumentData[]
+  >([]);
 
   useEffect(() => {
     setLoading(true);
@@ -32,21 +34,10 @@ export default function Dashboard() {
     dashboardInit();
   }, []);
 
-  // console.log(followingReviews)
-  console.log("popular this week:", communityFavourites);
+  console.log(followingReviews);
+  // console.log("popular this week:", communityFavourites);
 
   // temp mapping for "popular among friends"
-  const friendsPopularMapped = weeklyPopular.map((i, index) => (
-    <article
-      className="flex flex-col gap-1 py-2
-        text-sm border-b-2 border-black/10"
-      key={index}
-    >
-      <h1 className="text-xl font-semibold">{i.name}</h1>
-      <p>Reviewed by Anon</p>
-      <p>Lorem ipsum dolor sit amet</p>
-    </article>
-  ));
 
   if (loading) return <h1> Loading... </h1>;
   return (
@@ -106,7 +97,17 @@ export default function Dashboard() {
           className="w-full h-fit
                 flex flex-col gap-4"
         >
-          {friendsPopularMapped}
+          {followingReviews.map((review, index) => (
+            <article
+              className="flex flex-col gap-1 py-2
+        text-sm border-b-2 border-black/10"
+              key={index}
+            >
+              <h1 className="text-xl font-semibold font-serif">{review.sheetTitle}</h1>
+              <p className="text-sm font-light text-black/40">Reviewed by {review.data.displayName}</p>
+              <p>{review.data.content}</p>
+            </article>
+          ))}
         </div>
       </section>
     </div>
