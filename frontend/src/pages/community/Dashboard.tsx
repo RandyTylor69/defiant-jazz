@@ -1,25 +1,30 @@
 import { useEffect, useState } from "react";
 import { weeklyPopular } from "../../data";
-import { getCommunityFavourites } from "./CommUtils.ts";
-import { SheetType } from "../../types.ts";
+import { getCommunityFavourites, getFollowingReviews } from "./CommUtils.ts";
+import { ReviewType, SheetType } from "../../types.ts";
 import { Link } from "react-router-dom";
 import { DocumentData } from "firebase/firestore";
-import { stringify } from "querystring";
 import { slugify } from "../../utils.ts";
+import { useLayout } from "../../components/Layout.tsx";
 
 export default function Dashboard() {
   // temp mapping for "popular this week"
   const [loading, setLoading] = useState(false);
+  const { uid, setLogTarget } = useLayout();
   const [communityFavourites, setCommunityFavourites] = useState<
     DocumentData[]
   >([]);
+  const [followingReviews, setFollowingReviews] = useState<any>([]);
 
   useEffect(() => {
     setLoading(true);
     async function dashboardInit() {
       // 1. get community favourites
       const commFavouriteResult = await getCommunityFavourites(1);
+      // 2. get reviews from followed users
+      const followingReviewsResult = await getFollowingReviews(uid as string);
       setCommunityFavourites(commFavouriteResult);
+      setFollowingReviews(followingReviewsResult);
 
       setLoading(false);
     }
@@ -27,7 +32,8 @@ export default function Dashboard() {
     dashboardInit();
   }, []);
 
-  console.log(communityFavourites);
+  // console.log(followingReviews)
+  console.log("popular this week:", communityFavourites);
 
   // temp mapping for "popular among friends"
   const friendsPopularMapped = weeklyPopular.map((i, index) => (
@@ -57,7 +63,8 @@ export default function Dashboard() {
                 "
         >
           {communityFavourites.map((sheet, index) => {
-            const sheetId = slugify(sheet.fullName)
+            const sheetId = slugify(sheet.fullName);
+
             return (
               <Link
                 to={`/sheet/${sheetId}`}
@@ -67,8 +74,16 @@ export default function Dashboard() {
                 state={{
                   title: sheet.title,
                   composer: sheet.composer,
-                  sheetId: sheetId
+                  sheetId: sheetId,
                 }}
+                onClick={() =>
+                  setLogTarget({
+                    fullName: sheet.fullName,
+                    title: sheet.title,
+                    composer: sheet.composer,
+                    sheetId: sheetId,
+                  })
+                }
               >
                 <h1 className="text-4xl font-bold text-black/70 break-words hyphens-auto m-4">
                   {sheet.title}

@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation, useParams, Link } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { DocumentData } from "firebase/firestore";
-import { auth, db } from "../firebase/firebaseConfig";
+
 import { useLayout } from "../components/Layout.tsx";
 import {
   fetchUserReview,
-  updateReview,
   fetchAllReviews,
   toggleRating,
 } from "../utils.ts";
-import { ReviewType } from "../types.ts";
-import { FaThumbsUp } from "react-icons/fa6";
+
 import Review from "../components/Review.tsx";
 
 export default function Sheet() {
@@ -24,6 +22,7 @@ export default function Sheet() {
     setIsLoggingDetail,
     setLogTarget,
     isLoggedIn,
+    logTarget
   } = useLayout();
   const [hasReviewed, setHasReviewed] = useState(false);
   const [reviewId, setReviewId] = useState("");
@@ -81,6 +80,8 @@ export default function Sheet() {
       }}
     ></div>
   ));
+
+  console.log(logTarget)
 
   return (
     <div

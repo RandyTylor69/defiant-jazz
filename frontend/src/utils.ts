@@ -12,6 +12,7 @@ import {
   increment,
   deleteDoc,
   DocumentData,
+  serverTimestamp,
 } from "firebase/firestore";
 
 import { SheetType, ReviewType, LogTargetType, UserType } from "./types";
@@ -83,7 +84,7 @@ export async function getReviewsByUser(uid: string) {
   });
 }
 
-export async function addReviewToDB(review: ReviewType, uid: string) {
+export async function addReviewToDB(review: Partial<ReviewType>, uid: string) {
   if (!review.sheetId) return;
 
   // 1. Check if sheet exists
@@ -102,6 +103,7 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
     });
 
     sheetStatus = await getDoc(sheetRef);
+
   }
 
   // 3. Add review
@@ -114,6 +116,7 @@ export async function addReviewToDB(review: ReviewType, uid: string) {
     creationDate: new Date().toISOString(),
     displayName: review.displayName,
     likes: 0,
+    fireBaseTimestamp: serverTimestamp(),
   });
 
   // 4. Increment sheet review count
@@ -188,8 +191,8 @@ export async function fetchUserReview(
       setReviewId(review.id);
       // Im not typing setRatingBg, I'm not doing it boss.
       // but you can see its type in Sheet.tsx
-      setRatingBg((prev:any) => {
-        return prev.map((i:any) => ({
+      setRatingBg((prev: any) => {
+        return prev.map((i: any) => ({
           ...i,
           on: i.id < review.data().rating * 2 ? true : false,
         }));
@@ -245,8 +248,8 @@ export function toggleRating(
   // Click on a half-star. All its previous ones (include itself) should light up.
   // All its preceding ones should dim out.
 
-  setRatingBg((prev:any) =>
-    prev.map((i:any) => ({ ...i, on: i.id > toggleID ? false : true }))
+  setRatingBg((prev: any) =>
+    prev.map((i: any) => ({ ...i, on: i.id > toggleID ? false : true }))
   );
 
   const newRating = (toggleID + 1) / 2;
@@ -292,7 +295,7 @@ export async function unlikeReview(reviewId: string, uid: string) {
   });
   // Update the "likedReviews" subcollection for the "user" document of the "likes" collection.
   const likeRef = doc(db, "likes", uid, "likedReviews", reviewId);
-  await deleteDoc(likeRef)
+  await deleteDoc(likeRef);
 }
 
 // -----------------------------

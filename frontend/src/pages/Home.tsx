@@ -18,7 +18,7 @@ export default function Home() {
   // the useAuth() hook contains the user's logged in status.
   const { userLoggedIn, currentUser } = useAuth();
   const [favPiecePlayTime, setFavPiecePlayTime] = useState<number | null>(null);
-  const { uid } = useLayout();
+  const { uid, setLogTarget } = useLayout();
   // temp f() for palette
   function isEven(num: number) {
     return num % 2 === 0;
@@ -121,6 +121,14 @@ export default function Home() {
                   composer: favouritePiece.composer,
                   sheetId: favouritePiece.sheetId,
                 }}
+                onClick={() =>
+                  setLogTarget({
+                    fullName: favouritePiece.fullName,
+                    title: favouritePiece.title,
+                    composer: favouritePiece.composer,
+                    sheetId: favouritePiece.sheetId,
+                  })
+                }
               >
                 {favouritePiece.title}{" "}
               </Link>
@@ -196,6 +204,14 @@ export default function Home() {
                           composer: p.composer,
                           sheetId: p.sheetId,
                         }}
+                        onClick={() =>
+                          setLogTarget({
+                            fullName: p.fullName,
+                            title: p.title,
+                            composer: p.composer,
+                            sheetId: p.sheetId,
+                          })
+                        }
                       >
                         {" "}
                         <FiArrowUpRight className="text-4xl" />

@@ -117,7 +117,7 @@ export default function EditProfile() {
       <form
         onSubmit={handleSubmit}
         className="w-full h-fit relative
-      flex flex-col gap-12 pb-20"
+      flex flex-col gap-12 pb-10"
       >
         {/** ---- Updating Profile Picture ---- */}
         <div className="flex flex-col gap-4">
@@ -266,7 +266,7 @@ export default function EditProfile() {
 
       {/** ---- log out button */}
       <button
-        className="text-sm text-black/40 underline mt-10"
+        className="text-sm text-black/40 underline"
         onClick={handleSignOut}
       >
         Log out

@@ -68,6 +68,8 @@ export default function LogSheetDetail() {
     );
     setIsLoggingDetail(false);
     setIsLoggingFinished(true);
+
+    console.log(logTarget)
   }
 
   // -------------- RATING MECHANICS -------------------
