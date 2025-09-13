@@ -15,7 +15,8 @@ export default function Review({
   reviewId,
   index,
   authorProfileURLs,
-}) {
+  
+}:any) {
   const [hasLiked, setHasLiked] = useState(false);
   const [likes, setLikes] = useState(0);
   const { uid } = useLayout();

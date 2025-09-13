@@ -1,6 +1,5 @@
 import { collection, DocumentData, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
-import { SheetType } from "../../types";
 
 export async function getCommunityFavourites(minReviewCount: number) {
   let arr: DocumentData[] = [];

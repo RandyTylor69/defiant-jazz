@@ -186,10 +186,10 @@ export async function fetchUserReview(
 
     reviewSnapshot.forEach((review) => {
       setReviewId(review.id);
-      // Im not typing this, I'm not doing it boss.
+      // Im not typing setRatingBg, I'm not doing it boss.
       // but you can see its type in Sheet.tsx
-      setRatingBg((prev) => {
-        return prev.map((i) => ({
+      setRatingBg((prev:any) => {
+        return prev.map((i:any) => ({
           ...i,
           on: i.id < review.data().rating * 2 ? true : false,
         }));
@@ -245,8 +245,8 @@ export function toggleRating(
   // Click on a half-star. All its previous ones (include itself) should light up.
   // All its preceding ones should dim out.
 
-  setRatingBg((prev) =>
-    prev.map((i) => ({ ...i, on: i.id > toggleID ? false : true }))
+  setRatingBg((prev:any) =>
+    prev.map((i:any) => ({ ...i, on: i.id > toggleID ? false : true }))
   );
 
   const newRating = (toggleID + 1) / 2;
