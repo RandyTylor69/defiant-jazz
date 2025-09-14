@@ -13,6 +13,7 @@ import Followers from "./pages/user/Followers.tsx";
 import Following from "./pages/user/Following.tsx";
 import AuthRequired from "./components/AuthRequired.tsx";
 import InvalidPage from "./pages/InvalidPage.tsx";
+import CreateSheet from "./pages/CreateSheet.tsx";
 
 function App() {
   return (
@@ -36,6 +37,10 @@ function App() {
 
             <Route path="community">
               <Route index element={<Dashboard />}></Route>
+            </Route>
+
+            <Route path="create" element={<CreateSheet />}>
+              
             </Route>
           </Route>
           <Route path="*" element={<InvalidPage />} />
