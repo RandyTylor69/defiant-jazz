@@ -65,6 +65,27 @@ export async function getSheetByLogTarget(
   };
 }
 
+export async function getSheets(title: string) {
+  const sheetsRef = collection(db, "sheets");
+  const sheetsSnap = await getDocs(sheetsRef);
+  const results = sheetsSnap.docs.map((doc) => {
+    if (doc.data().fullName.toLowerCase().includes(title)) {
+      return {
+        fullName: doc.data().fullName,
+        composer: doc.data().composer,
+        title: doc.data().title,
+        sheetId: doc.id,
+      };
+    }
+
+    return null;
+  });
+  // return up to 10 results.
+
+  if (results.length < 10) return results.filter((sheet) => sheet !== null);
+  else return results.filter((sheet) => sheet !== null).splice(0, 10);
+}
+
 // -----------------------------
 // Reviews
 // -----------------------------
@@ -103,7 +124,6 @@ export async function addReviewToDB(review: Partial<ReviewType>, uid: string) {
     });
 
     sheetStatus = await getDoc(sheetRef);
-
   }
 
   // 3. Add review

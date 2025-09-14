@@ -1,35 +1,50 @@
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useLayout } from "../components/Layout.tsx";
-import { slugify } from "../utils.ts";
-
-type SearchItem = {
-  title: string;
-  composer: string;
-};
+import { getSheets, slugify } from "../utils.ts";
 
 export default function Search() {
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<SearchItem[]>([]);
+  const [results, setResults] = useState<any[]>([]);
   const { params } = useParams<{ params: string }>(); // Typing the content of the object returned by useParams()
   const { setLogTarget } = useLayout();
   useEffect(() => {
     setLoading(true);
     async function fetchData() {
       if (!params) return;
-       const res = await fetch(
+      // We will search from 2 databases.
+      // 1. The IMSLP API.
+      const res = await fetch(
         `${process.env.REACT_APP_SERVER_ROUTE}/api/imslp?q=${encodeURIComponent(
           params
         )}`
       );
-      
+
       const data = await res.json();
 
-      data.query.search != null && setResults(data.query.search); 
-      setLoading(false)
+      data.query.search != null && setResults(data.query.search); // returns up to 50 results.
+
+      // 2. Search from our own firebase database. Look for sheet documents with the same name.
+      const fbResult = await getSheets(params);
+
+      console.log(fbResult);
+
+      if (!fbResult) return;
+      // append results to main results
+      for (const sheet of fbResult) {
+        setResults((prev) => [
+          ...prev,
+          {
+            title: sheet.fullName,
+          },
+        ]);
+      }
+      setLoading(false);
     }
     fetchData();
   }, []);
+
+  console.log(results);
 
   if (loading) return <h1>Loading</h1>;
   return (
@@ -75,10 +90,15 @@ export default function Search() {
             );
           })
         ) : (
-          <p className="text-black/20 italic">
-            No results :( Make sure to include any accents. For example:
-            "Rêverie" instead of "Reverie".
-          </p>
+          <div className="flex flex-col gap-2 text-black/20 italic">
+            <p>
+              No results, make sure to include any accents. For example:
+              "Rêverie" instead of "Reverie".
+            </p>
+            <Link to={"/create"} className="underline">
+              Alternatively, you can add a new sheet here.
+            </Link>
+          </div>
         )}
       </ul>
     </div>
