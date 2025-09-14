@@ -193,9 +193,8 @@ export default function Home() {
                       className="w-full
             flex flex-row justify-between"
                     >
-                      <div className="flex flex-col gap-2 text-xs">
-                        <p>{p.composer}</p>
-                        <p>0 days played</p>
+                      <div className="flex text-xs">
+                        <p className="">{p.composer}</p>
                       </div>
                       <Link
                         to={`/sheet/${p.sheetId}`}

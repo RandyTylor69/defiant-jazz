@@ -34,14 +34,16 @@ export default function Header() {
           >
             <button>Home</button>
           </NavLink>
-          <NavLink
-            to={"community"}
-            className={({ isActive }) =>
-              isActive ? "btn-primary" : "btn-secondary"
-            }
-          >
-            <button>Community</button>
-          </NavLink>
+          {userLoggedIn && (
+            <NavLink
+              to={"community"}
+              className={({ isActive }) =>
+                isActive ? "btn-primary" : "btn-secondary"
+              }
+            >
+              <button>Community</button>
+            </NavLink>
+          )}
         </div>
 
         {/** ---- rightnav div ------- */}
@@ -49,40 +51,39 @@ export default function Header() {
         {isSearching ? (
           <SearchBar setIsSearching={setIsSearching} />
         ) : (
-          // --------- search
           <div className="flex flex-row gap-4">
-            <button
-              className="btn-tertiary"
-              onClick={()=>setIsSearching(prev=>!prev)}
-            >
-              <FaSearch />
-            </button>
-            {/** -------user  */}
             {userLoggedIn && (
-              <NavLink
-                to={`${currentUser?.uid}`}
-              >
-                {({ isActive }) => (
-                  <button
-                    className={`btn-tertiary ${
-                      isActive ? "bg-black/70 text-primary" : ""
-                    }`}
-                  >
-                    <FaUserLarge />
-                  </button>
-                )}
-              </NavLink>
-            )}
-            {userLoggedIn && (
-              <button
-                className="btn-tertiary"
-                onClick={() => {
-                  setIsLogging((prev) => !prev);
-                  setIsAnyLogWindowOpen(true);
-                }}
-              >
-                <FaPlus />
-              </button>
+              <>
+                {/** ----- search */}
+                <button
+                  className="btn-tertiary"
+                  onClick={() => setIsSearching((prev) => !prev)}
+                >
+                  <FaSearch />
+                </button>
+                {/** ----- user */}
+                <NavLink to={`${currentUser?.uid}`}>
+                  {({ isActive }) => (
+                    <button
+                      className={`btn-tertiary ${
+                        isActive ? "bg-black/70 text-primary" : ""
+                      }`}
+                    >
+                      <FaUserLarge />
+                    </button>
+                  )}
+                </NavLink>
+                {/** ----- add new */}
+                <button
+                  className="btn-tertiary"
+                  onClick={() => {
+                    setIsLogging((prev) => !prev);
+                    setIsAnyLogWindowOpen(true);
+                  }}
+                >
+                  <FaPlus />
+                </button>
+              </>
             )}
           </div>
         )}

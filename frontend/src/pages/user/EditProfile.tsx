@@ -48,7 +48,6 @@ export default function EditProfile() {
     fetchUserInfo();
   }, []);
 
-
   async function handleSignOut() {
     await doSignout();
     console.log("User signed out.");
@@ -265,12 +264,9 @@ export default function EditProfile() {
       )}
 
       {/** ---- log out button */}
-      <button
-        className="text-sm text-black/40 underline"
-        onClick={handleSignOut}
-      >
-        Log out
-      </button>
+      <Link to={"/"} className="text-sm text-black/40 underline mx-auto">
+        <button onClick={handleSignOut}>Log out</button>
+      </Link>
     </div>
   );
 }

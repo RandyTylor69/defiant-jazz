@@ -11,6 +11,8 @@ import EditProfile from "./pages/user/EditProfile.tsx";
 import UserSheetsAnnual from "./pages/user/UserSheetsAnnual.tsx";
 import Followers from "./pages/user/Followers.tsx";
 import Following from "./pages/user/Following.tsx";
+import AuthRequired from "./components/AuthRequired.tsx";
+import InvalidPage from "./pages/InvalidPage.tsx";
 
 function App() {
   return (
@@ -18,21 +20,25 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="search/:params" element={<Search />} />
-          <Route path="sheet/:sheetId" element={<Sheet />} />
 
-          <Route path=":uid">
-            <Route index element={<Profile />} />
-            <Route path="sheets" element={<UserSheets />} />
-            <Route path="sheetsAnnual" element={<UserSheetsAnnual />} />
-            <Route path="edit" element={<EditProfile />} />
-            <Route path="followers" element={<Followers />} />
-            <Route path="following" element={<Following />} />
-          </Route>
+          <Route element={<AuthRequired />}>
+            <Route path="search/:params" element={<Search />} />
+            <Route path="sheet/:sheetId" element={<Sheet />} />
 
-          <Route path="community">
-            <Route index element={<Dashboard />}></Route>
+            <Route path=":uid">
+              <Route index element={<Profile />} />
+              <Route path="sheets" element={<UserSheets />} />
+              <Route path="sheetsAnnual" element={<UserSheetsAnnual />} />
+              <Route path="edit" element={<EditProfile />} />
+              <Route path="followers" element={<Followers />} />
+              <Route path="following" element={<Following />} />
+            </Route>
+
+            <Route path="community">
+              <Route index element={<Dashboard />}></Route>
+            </Route>
           </Route>
+          <Route path="*" element={<InvalidPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
