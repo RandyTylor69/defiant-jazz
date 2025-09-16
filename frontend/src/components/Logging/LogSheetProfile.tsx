@@ -4,8 +4,9 @@
 import { RxCross1 } from "react-icons/rx";
 import { FaSearch } from "react-icons/fa";
 import { useState, useEffect } from "react";
-import { slugify } from "../../utils.ts";
+import { getSheets, slugify } from "../../utils.ts";
 import { useLayout } from "../Layout.tsx";
+import { Link } from "react-router-dom";
 
 type SearchResultType = {
   ns: number;
@@ -46,6 +47,25 @@ export default function LogSheetProfile({
       const data = await res.json();
 
       data.query.search.length > 0 && setResults(data.query.search);
+      
+      // 2. fetch from fb
+      const fbResult = await getSheets(searchParams);
+
+      if (!fbResult) return;
+      // append results to main results
+      for (const sheet of fbResult) {
+        setResults((prev: any) => {
+          // don't add result if result already exists
+          if (prev.find((i: any) => i.title === sheet.fullName)) return prev;
+
+          return [
+            ...prev,
+            {
+              title: sheet.fullName,
+            },
+          ];
+        });
+      }
     }
     fetchData();
   }, [searchParams]);
@@ -93,7 +113,7 @@ export default function LogSheetProfile({
         {/** ----- The collapsed option list ------ */}
         <ul
           className="overflow-y-scroll flex flex-col max-h-[20rem]
-        gap-4 w-full "
+        gap-4 w-full mb-4 "
         >
           {results &&
             results.map((result: SearchResultType) => {
@@ -136,6 +156,7 @@ export default function LogSheetProfile({
                     setIsLoggingFavourite(false);
                     setIsLoggingCurrentlyPracticing(false);
                     setIsLoggingProfile(false);
+                    setIsAnyLogWindowOpen(false);
                   }}
                 >
                   {title},{" "}
@@ -144,6 +165,18 @@ export default function LogSheetProfile({
               );
             })}
         </ul>
+        <Link
+          to="/create"
+          onClick={() => {
+            setIsLoggingProfile(false);
+            setIsAnyLogWindowOpen(false);
+          }}
+          className="absolute bottom-0 w-full bg-black/10
+        font-light text-xs text-black/30 px-4 py-1
+        "
+        >
+          <p>Can't find the sheet? Create a it here!</p>
+        </Link>
       </div>
     </div>
   );

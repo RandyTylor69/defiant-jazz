@@ -5,8 +5,9 @@ import { RxCross1 } from "react-icons/rx";
 import { FaSearch } from "react-icons/fa";
 import { useLayout } from "../Layout.tsx";
 import { useState, useEffect } from "react";
-import { slugify } from "../../utils.ts";
+import { getSheets, slugify } from "../../utils.ts";
 import { SearchResultType } from "../../types.ts";
+import { Link } from "react-router-dom";
 
 export default function LogSheet() {
   const [searchParams, setSearchParams] = useState("");
@@ -36,16 +37,42 @@ export default function LogSheet() {
       const data = await res.json();
 
       data.query.search.length > 0 && setResults(data.query.search);
+
+      // 2. Search from our own firebase database. Look for sheet documents with the same name.
+      const fbResult = await getSheets(searchParams);
+
+      if (!fbResult) return;
+
+      // append results to main results
+      for (const sheet of fbResult) {
+        setResults((prev: any) => {
+          // don't add result if result already exists
+          if (prev.find((i: any) => i.title === sheet.fullName)) return prev;
+
+          return [
+            ...prev,
+            {
+              title: sheet.fullName,
+            },
+          ];
+        });
+      }
+
+      // 3. Create a new array that's identical of the results array above, but
+      // trim off all pieces of the same name (damn you, IMSLP!)
+      if (!results) return;
     }
     fetchData();
   }, [searchParams]);
+
+  console.log(results);
 
   return (
     <div className="inset-0 absolute bg-black/80 backdrop-blur-md z-[999] ">
       <div
         className="absolute w-[90vw] max-w-[30rem] h-fit p-4 border-black/20 border-2
                 bg-primary text-black/70
-                flex flex-col justify-center items-center gap-6
+                flex flex-col justify-center items-center gap-8
                 top-[50%] left-[50%] transform -translate-x-[50%] -translate-y-[50%]
                 "
       >
@@ -80,13 +107,15 @@ export default function LogSheet() {
             <FaSearch />
           </button>
         </form>
+
         {/** ----- The collapsed option list ------ */}
         <ul
           className="overflow-y-scroll flex flex-col max-h-[20rem]
-        gap-4 w-full "
+        gap-4 w-full mb-2"
         >
           {results &&
             results.map((result: SearchResultType) => {
+              if (result.title === undefined) return;
               const composer = result.title.includes("(")
                 ? result.title.split("(")[1].split(")")[0].trim()
                 : "";
@@ -112,6 +141,16 @@ export default function LogSheet() {
               );
             })}
         </ul>
+
+        <Link
+          to="/create"
+          onClick={() => setIsLogging(false)}
+          className="absolute bottom-0 w-full bg-black/10 
+        font-light text-xs text-black/30 px-4 py-1
+        "
+        >
+          <p>Can't find the sheet? Create a it here!</p>
+        </Link>
       </div>
     </div>
   );

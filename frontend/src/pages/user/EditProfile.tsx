@@ -27,7 +27,7 @@ export default function EditProfile() {
     LogTargetType[]
   >([]);
   const [isLoggingProfile, setIsLoggingProfile] = useState(false);
-  const { uid, photoURL, setIsAnyLogWindowOpen } = useLayout();
+  const { uid, photoURL, setIsAnyLogWindowOpen, isAnyLogWindowOpen } = useLayout();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,6 +102,8 @@ export default function EditProfile() {
       });
     }
   }
+
+  console.log(isAnyLogWindowOpen)
 
   return (
     <div
@@ -191,9 +193,11 @@ export default function EditProfile() {
             type="button"
             className="btn-secondary rounded-[0rem] w-fit"
             onClick={() => {
+              
               setIsAnyLogWindowOpen(true);
               setIsLoggingProfile(true);
               setIsLoggingFavourite(true);
+              
             }}
           >
             {favouritePiece ? "Change" : "Add new"}

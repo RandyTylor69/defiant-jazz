@@ -63,7 +63,7 @@ export default function Layout() {
       <div
         className={`min-h-screen h-fit bg-primary font-HKGrotesk p-4 
         flex flex-col justifty-center items-center gap-6 md:gap-40
-                ${isAnyLogWindowOpen && `h-[100vh] overflow-hidden`}
+                ${isAnyLogWindowOpen && `h-0 overflow-hidden`}
         `}
       >
         <Header />
