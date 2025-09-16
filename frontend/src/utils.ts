@@ -81,7 +81,7 @@ export async function getSheets(title: string) {
     return null;
   });
   // return up to 10 results.
-
+  console.log( "results from utils:", results.filter(sheet=>sheet!=null))
   if (results.length < 10) return results.filter((sheet) => sheet !== null);
   else return results.filter((sheet) => sheet !== null).splice(0, 10);
 }
