@@ -64,7 +64,7 @@ export default function CreateSheet() {
             className="general-text-input"
             value={composer}
             onChange={(e) => setComposer(e.target.value)}
-            placeholder="S.L."
+            placeholder="Last name, First name"
             required
           />
         </div>

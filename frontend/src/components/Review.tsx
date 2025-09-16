@@ -13,10 +13,10 @@ import { useLayout } from "./Layout.tsx";
 export default function Review({
   reviewData,
   reviewId,
+  authorSheetsTotal, 
   index,
   authorProfileURLs,
-  
-}:any) {
+}: any) {
   const [hasLiked, setHasLiked] = useState(false);
   const [likes, setLikes] = useState(0);
   const { uid } = useLayout();
@@ -52,9 +52,14 @@ export default function Review({
           alt="user profile picture"
         />
 
-        <p className="text-sm text-black/70 ">
-          {reviewData.displayName ? reviewData.displayName : "Anonymous"}
-        </p>
+        <div className="flex flex-col">
+          <p className="text-sm text-black/70 ">
+            {reviewData.displayName ? reviewData.displayName : "Anonymous"}
+          </p>
+          <p className="text-sm text-black/30 font-light">
+            {authorSheetsTotal} sheets
+          </p>
+        </div>
       </Link>
       {/** --- div with comment --- */}
       <article

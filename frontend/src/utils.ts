@@ -242,10 +242,12 @@ export async function fetchAllReviews(
       // 1. Get the author's profile picture.
       const { uid: authorId } = review.data();
       let authorProfileURL = null;
+      let authorSheetsTotal = 0;
       const authorRef = doc(db, "users", authorId);
       const authorSnap = await getDoc(authorRef);
       if (authorSnap.exists()) {
         authorProfileURL = authorSnap.data().photoURL;
+        authorSheetsTotal = authorSnap.data().sheetsTotal;
       }
 
       if (!authorProfileURL) return;
@@ -253,7 +255,7 @@ export async function fetchAllReviews(
       // 2. Add the reviwe into the reviews state.
       setReviews((prev) => [
         ...prev,
-        { reviewData: review.data() as ReviewType, reviewId: review.id },
+        { reviewData: review.data() as ReviewType, reviewId: review.id, authorSheetsTotal:authorSheetsTotal },
       ]);
     });
   }

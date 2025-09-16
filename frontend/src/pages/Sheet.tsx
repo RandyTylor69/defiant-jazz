@@ -152,6 +152,7 @@ export default function Sheet() {
                 index={index}
                 authorProfileURLs={authorProfileURLs}
                 key={index}
+                authorSheetsTotal = {review.authorSheetsTotal}
               />
             );
           })}
