@@ -11,7 +11,7 @@ import {
 } from "../utils.ts";
 
 import Review from "../components/Review.tsx";
-import {SheetType } from "../types.ts";
+import { SheetType } from "../types.ts";
 
 export default function Sheet() {
   const location = useLocation();
@@ -117,8 +117,7 @@ export default function Sheet() {
           <h1 className="text-2xl md:text-4xl">{title}</h1>
           <p>{logTarget.composer}</p>
           <p className="text-black/20 italic font-light">
-            Played by {sheetInfo?.reviewCount}{" "}
-            {sheetInfo?.reviewCount == 1 ? "person" : "people"}
+            Played by {sheetInfo?.reviewCount}
           </p>
         </article>
         <div className="flex flex-col h-[8rem] w-full max-w-[20rem] bg-secondary">
@@ -151,6 +150,7 @@ export default function Sheet() {
           </div>
         </div>
       </section>
+
       {/**  ==================================================== */}
       {/**  ===============[ Reviews Section ]================= */}
       {/**  ==================================================== */}
