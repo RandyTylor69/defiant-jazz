@@ -81,7 +81,7 @@ export default function Sheet() {
     ></div>
   ));
 
-  console.log(logTarget)
+  console.log("Log target:",logTarget)
 
   return (
     <div
@@ -152,6 +152,7 @@ export default function Sheet() {
                 index={index}
                 authorProfileURLs={authorProfileURLs}
                 key={index}
+                authorSheetsTotal = {review.authorSheetsTotal}
               />
             );
           })}
