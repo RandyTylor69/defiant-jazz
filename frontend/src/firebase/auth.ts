@@ -16,7 +16,7 @@ export async function createUserDoc(user:DocumentData){
   await setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
       email: user.email as string,
-      displayName: user.displayName,
+      displayName: user.displayName ? user.displayName : "Anonymous",
       photoURL: user.photoURL,
       aboutMe: "",
       sheetsTotal: 0,

@@ -61,7 +61,7 @@ export async function register(
     // Only create if user doc does not already exist
     await createUserDoc(result.user);
     window.location.reload();
-  } catch (err) {
+  } catch (err:any) {
     if (err.code === "auth/email-already-in-use") {
       alert("User exists already, please log in :)");
     }

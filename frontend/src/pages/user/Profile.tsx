@@ -39,6 +39,8 @@ export default function Profile() {
     // the missing fields will be supplemented once the component mounts.
   });
 
+  console.log(userData);
+
   useEffect(() => {
     setLoading(true);
     async function fetchUserInfo() {
@@ -70,7 +72,7 @@ export default function Profile() {
       // 2. Check if the current user is following this user
       const followingResult = await isFollowing(myUid as string, uid as string);
       setCurrentlyFollowing(followingResult);
-     
+
       setLoading(false);
     }
 
@@ -103,13 +105,19 @@ export default function Profile() {
                 className="rounded-[50%] h-[6rem] w-[6rem]"
               />
             ) : (
-              <div className="w-full h-full bg-secondary"></div>
+              <div
+                className="w-[5rem] h-[5rem] bg-black/10 rounded-[50%]
+              flex justify-center items-center"
+              >
+                <h1 className="text-xl"> {/** Anon */}A</h1>
+              </div>
             )}
           </div>
 
           {/** ----- 2. username + aboutme ----- */}
           <div className="flex flex-col gap-2 justify-center">
             <div className="flex gap-2 items-baseline">
+              
               <h1 className="text-2xl font-light">{userData.displayName}</h1>
               {uid === myUid ? (
                 <Link to={`edit`}>
