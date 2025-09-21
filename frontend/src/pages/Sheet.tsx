@@ -81,7 +81,9 @@ export default function Sheet() {
     ></div>
   ));
 
-  console.log("Log target:",logTarget)
+  console.log(reviews)
+
+  // console.log("Log target:",logTarget)
 
   return (
     <div

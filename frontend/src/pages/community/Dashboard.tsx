@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { weeklyPopular } from "../../data";
 import { getCommunityFavourites, getFollowingReviews } from "./CommUtils.ts";
 import { Link } from "react-router-dom";
 import { DocumentData } from "firebase/firestore";
 import { slugify } from "../../utils.ts";
 import { useLayout } from "../../components/Layout.tsx";
-import { ReviewType } from "../../types.ts";
 
 export default function Dashboard() {
   // temp mapping for "popular this week"
@@ -14,7 +12,9 @@ export default function Dashboard() {
   const [communityFavourites, setCommunityFavourites] = useState<
     DocumentData[]
   >([]);
-  const [followingReviews, setFollowingReviews] = useState<DocumentData[]>([]);
+  const [followingReviews, setFollowingReviews] = useState<
+    DocumentData[] | null
+  >([]);
 
   useEffect(() => {
     setLoading(true);
@@ -31,11 +31,6 @@ export default function Dashboard() {
 
     dashboardInit();
   }, []);
-
-  console.log(followingReviews);
-  // console.log("popular this week:", communityFavourites);
-
-  // temp mapping for "popular among friends"
 
   if (loading) return <h1> Loading... </h1>;
   return (
@@ -95,9 +90,9 @@ export default function Dashboard() {
           className="w-full h-fit
                 flex flex-col gap-4"
         >
-          {followingReviews.length === 0 ? (
+          {followingReviews === null || followingReviews.length === 0 ? (
             <h1 className="text-sm font-light text-black/40">
-              So empty... start following more people!
+              Once you start interacting with other users, you will see your friends' reviews here!
             </h1>
           ) : (
             <>

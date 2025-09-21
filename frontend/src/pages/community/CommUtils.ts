@@ -38,6 +38,10 @@ export async function getFollowingReviews(uid: string) {
   // }
   const { followersIdArray } = await getFollowers(uid);
 
+  console.log(followersIdArray)
+
+  if(followersIdArray.length===0) return null;
+
   // the query will be sorted in descending time order, meaning newest first.
   const reviewsQuery = query(
     collection(db, "reviews"),

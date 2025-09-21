@@ -223,6 +223,7 @@ export async function fetchUserReview(
   }
 }
 
+// function that sets a state full of reviews.
 export async function fetchAllReviews(
   sheetId: string,
   setAuthorProfileURLs: Dispatch<SetStateAction<string[]>>,
