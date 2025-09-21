@@ -103,8 +103,6 @@ export default function EditProfile() {
     }
   }
 
-  console.log(isAnyLogWindowOpen)
-
   return (
     <div
       className="w-full h-full

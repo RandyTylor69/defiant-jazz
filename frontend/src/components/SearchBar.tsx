@@ -3,7 +3,7 @@ import { MdCancel } from "react-icons/md";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function SearchBar({ setIsSearching }) {
+export default function SearchBar({ setIsSearching } : any) {
   const [searchParams, setSearchParams] = useState("");
   const navigate = useNavigate();
   function handleChange(value: string) {

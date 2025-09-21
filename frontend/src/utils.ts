@@ -68,6 +68,7 @@ export async function getSheetByLogTarget(
 export async function getSheets(title: string) {
   const sheetsRef = collection(db, "sheets");
   const sheetsSnap = await getDocs(sheetsRef);
+  if(!title) return;
   const results = sheetsSnap.docs.map((doc) => {
     if (doc.data().fullName.toLowerCase().includes(title)) {
       return {
@@ -82,6 +83,7 @@ export async function getSheets(title: string) {
   });
   // return up to 10 results.
   console.log( "results from utils:", results.filter(sheet=>sheet!=null))
+  
   if (results.length < 10) return results.filter((sheet) => sheet !== null);
   else return results.filter((sheet) => sheet !== null).splice(0, 10);
 }

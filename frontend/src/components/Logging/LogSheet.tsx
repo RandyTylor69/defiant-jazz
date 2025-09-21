@@ -35,7 +35,8 @@ export default function LogSheet() {
         )}`
       );
       const data = await res.json();
-
+      // ---- check if user enters empty string
+      if (data.query === undefined) return;
       data.query.search.length > 0 && setResults(data.query.search);
 
       // 2. Search from our own firebase database. Look for sheet documents with the same name.

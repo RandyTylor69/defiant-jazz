@@ -39,6 +39,9 @@ export default function LogSheetProfile({
       );
       const data = await res.json();
 
+      // ---- check if user enters empty string
+      if(data.query===undefined) return;
+
       data.query.search.length > 0 && setResults(data.query.search);
       
       // 2. fetch from fb
