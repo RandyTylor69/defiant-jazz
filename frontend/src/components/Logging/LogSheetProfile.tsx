@@ -7,15 +7,8 @@ import { useState, useEffect } from "react";
 import { getSheets, slugify } from "../../utils.ts";
 import { useLayout } from "../Layout.tsx";
 import { Link } from "react-router-dom";
+import { SearchResultType } from "../../types.ts";
 
-type SearchResultType = {
-  ns: number;
-  title: string;
-  snippet: string;
-  timestamp: string;
-  size: number;
-  wordcount: number;
-};
 
 export default function LogSheetProfile({
   setIsLoggingProfile,
@@ -25,7 +18,7 @@ export default function LogSheetProfile({
   isLoggingCurrentlyPracticing,
   setIsLoggingCurrentlyPracticing,
   setCurrentlyPracticing,
-}) {
+}:any) {
   const [searchParams, setSearchParams] = useState("");
   const [results, setResults] = useState<SearchResultType[] | null>(null);
   const { setIsAnyLogWindowOpen } = useLayout();
