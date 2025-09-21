@@ -100,7 +100,7 @@ export default function Sheet() {
     ></div>
   ));
 
-  // console.log("Log target:", logTarget);
+  console.log(reviews);
 
   if (isLoading) return <h1>Loading...</h1>;
   return (
@@ -161,11 +161,7 @@ export default function Sheet() {
       "
       >
         <div className="text-black/20 italic font-light">
-          <h1>
-            Reviews {`(`}
-            {reviews.length}
-            {`)`}
-          </h1>
+          <h1>Reviews</h1>
         </div>
         <ul className="w-full h-fit flex flex-col gap-4 ">
           {reviews.map((review, index) => {

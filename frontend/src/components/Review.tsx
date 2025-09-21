@@ -33,7 +33,12 @@ export default function Review({
     reviewInit();
   }, []);
 
+  if (!reviewData.content) {
+    return null
+  }
+
   return (
+    
     <li
       className="w-full h-fit
             flex flex-col md:flex-row gap-6
@@ -57,13 +62,13 @@ export default function Review({
             className="size-12 bg-black/10 rounded-[50%]
               flex justify-center items-center"
           >
-            <h1 className="text-xl"> {/** Anon */}A</h1>
+            <h1 className="text-xl">{reviewData.displayName[0]}</h1>
           </div>
         )}
 
         <div className="flex flex-col">
           <p className="text-sm text-black/70 ">
-            {reviewData.displayName ? reviewData.displayName : "Anonymous"}
+            {reviewData.displayName}
           </p>
           <p className="text-sm text-black/30 font-light">
             {authorSheetsTotal} sheets

@@ -20,7 +20,7 @@ export default function Dashboard() {
     setLoading(true);
     async function dashboardInit() {
       // 1. get community favourites
-      const commFavouriteResult = await getCommunityFavourites(1);
+      const commFavouriteResult = await getCommunityFavourites(3);
       // 2. get reviews from followed users
       const followingReviewsResult = await getFollowingReviews(uid as string);
       setCommunityFavourites(commFavouriteResult);
@@ -77,7 +77,7 @@ export default function Dashboard() {
                 </h1>
                 <div className="bg-black/10 px-4">
                   <p className="text-sm text-black/60">
-                    {sheet.reviewCount} reviews
+                    {sheet.reviewCount} played
                   </p>
                 </div>
               </Link>

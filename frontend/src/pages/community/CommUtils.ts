@@ -27,7 +27,7 @@ export async function getCommunityFavourites(minReviewCount: number) {
 
   arr.sort((a, b) => a.reviewCount - b.reviewCount);
 
-  return arr.slice(0, 4);
+  return arr.slice(0, 4).reverse();
 }
 
 export async function getFollowingReviews(uid: string) {
