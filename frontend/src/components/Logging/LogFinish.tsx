@@ -37,7 +37,6 @@ export default function LogFinish() {
           }}
           onClick={() => {
             setIsLoggingFinished(false);
-            window.location.reload();
           }}
         >
           {logTarget.title}
@@ -49,7 +48,6 @@ export default function LogFinish() {
       <button
         onClick={() => {
           setIsLoggingFinished(false);
-          window.location.reload();
         }}
       >
         <RxCross1 />

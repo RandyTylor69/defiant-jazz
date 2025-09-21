@@ -13,7 +13,7 @@ import { useLayout } from "./Layout.tsx";
 export default function Review({
   reviewData,
   reviewId,
-  authorSheetsTotal, 
+  authorSheetsTotal,
   index,
   authorProfileURLs,
 }: any) {
@@ -46,11 +46,20 @@ export default function Review({
         className="w-full md:max-w-[5rem]
                  flex md:flex-col gap-2 "
       >
-        <img
-          className="size-12 object-cover rounded-[50%]"
-          src={`${authorProfileURLs[index]}`}
-          alt="user profile picture"
-        />
+        {authorProfileURLs[index] ? (
+          <img
+            className="size-12 object-cover rounded-[50%]"
+            src={`${authorProfileURLs[index]}`}
+            alt="user profile picture"
+          />
+        ) : (
+          <div
+            className="size-12 bg-black/10 rounded-[50%]
+              flex justify-center items-center"
+          >
+            <h1 className="text-xl"> {/** Anon */}A</h1>
+          </div>
+        )}
 
         <div className="flex flex-col">
           <p className="text-sm text-black/70 ">

@@ -49,6 +49,8 @@ export default function Dashboard() {
           {communityFavourites.map((sheet, index) => {
             const sheetId = slugify(sheet.fullName);
 
+            console.log(sheet)
+
             return (
               <Link
                 to={`/sheet/${sheetId}`}
@@ -59,6 +61,7 @@ export default function Dashboard() {
                   title: sheet.title,
                   composer: sheet.composer,
                   sheetId: sheetId,
+                  
                 }}
                 onClick={() =>
                   setLogTarget({

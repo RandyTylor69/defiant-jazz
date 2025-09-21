@@ -65,10 +65,17 @@ export async function getSheetByLogTarget(
   };
 }
 
+export async function getSheetBySheetId(sheetId: string): Promise<SheetType> {
+  const sheetRef = doc(db, "sheets", sheetId);
+  const sheetSnap = await getDoc(sheetRef);
+
+  return sheetSnap.data() as SheetType;
+}
+
 export async function getSheets(title: string) {
   const sheetsRef = collection(db, "sheets");
   const sheetsSnap = await getDocs(sheetsRef);
-  if(!title) return;
+  if (!title) return;
   const results = sheetsSnap.docs.map((doc) => {
     if (doc.data().fullName.toLowerCase().includes(title)) {
       return {
@@ -82,8 +89,11 @@ export async function getSheets(title: string) {
     return null;
   });
   // return up to 10 results.
-  console.log( "results from utils:", results.filter(sheet=>sheet!=null))
-  
+  console.log(
+    "results from utils:",
+    results.filter((sheet) => sheet != null)
+  );
+
   if (results.length < 10) return results.filter((sheet) => sheet !== null);
   else return results.filter((sheet) => sheet !== null).splice(0, 10);
 }
@@ -242,7 +252,7 @@ export async function fetchAllReviews(
   } else {
     reviewsSnapshot.forEach(async (review) => {
       // We will do 2 thingw with each review fetched.
-      // 1. Get the author's profile picture.
+      // 1. Get the reviewer's information.
       const { uid: authorId } = review.data();
       let authorProfileURL = null;
       let authorSheetsTotal = 0;
@@ -252,13 +262,15 @@ export async function fetchAllReviews(
         authorProfileURL = authorSnap.data().photoURL;
         authorSheetsTotal = authorSnap.data().sheetsTotal;
       }
-
-      if (!authorProfileURL) return;
       setAuthorProfileURLs((prev) => [...prev, authorProfileURL]);
       // 2. Add the reviwe into the reviews state.
       setReviews((prev) => [
         ...prev,
-        { reviewData: review.data() as ReviewType, reviewId: review.id, authorSheetsTotal:authorSheetsTotal },
+        {
+          reviewData: review.data() as ReviewType,
+          reviewId: review.id,
+          authorSheetsTotal: authorSheetsTotal,
+        },
       ]);
     });
   }

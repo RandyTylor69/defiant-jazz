@@ -7,9 +7,11 @@ import {
   fetchUserReview,
   fetchAllReviews,
   toggleRating,
+  getSheetBySheetId,
 } from "../utils.ts";
 
 import Review from "../components/Review.tsx";
+import {SheetType } from "../types.ts";
 
 export default function Sheet() {
   const location = useLocation();
@@ -22,12 +24,14 @@ export default function Sheet() {
     setIsLoggingDetail,
     setLogTarget,
     isLoggedIn,
-    logTarget
+    logTarget,
   } = useLayout();
   const [hasReviewed, setHasReviewed] = useState(false);
   const [reviewId, setReviewId] = useState("");
+  const [sheetInfo, setSheetInfo] = useState<SheetType | null>(null);
   const [reviews, setReviews] = useState<DocumentData[]>([]);
   const [authorProfileURLs, setAuthorProfileURLs] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [ratingBg, setRatingBg] = useState([
     { id: 0, on: false },
     { id: 1, on: false },
@@ -42,6 +46,8 @@ export default function Sheet() {
   ]);
 
   useEffect(() => {
+    setIsLoading(true);
+
     // ___________________________________________
     //
     // This hook contains 3 functions.
@@ -52,22 +58,35 @@ export default function Sheet() {
     // ___________________________________________
 
     // 1.
-    if (uid)
-      fetchUserReview(
-        uid,
-        sheetId as string,
-        setHasReviewed,
-        setReviewId,
-        setRatingBg
-      );
-    // 2.
-    fetchAllReviews(sheetId as string, setAuthorProfileURLs, setReviews);
+    async function fetchFunction() {
+      if (uid)
+        fetchUserReview(
+          uid,
+          sheetId as string,
+          setHasReviewed,
+          setReviewId,
+          setRatingBg
+        );
+      // 2.
+      fetchAllReviews(sheetId as string, setAuthorProfileURLs, setReviews);
 
-    // 3.
-    // set logTarget's sheetId field when the window reloads.
-    // else react will forget what logTarget has.
-    if (!sheetId) return;
-    setLogTarget((prev) => ({ ...prev, sheetId, title, composer }));
+      // 3.
+      // set logTarget's sheetId field when the window reloads.
+      // else react will forget what logTarget has.
+      if (!sheetId) return;
+      setLogTarget((prev) => ({ ...prev, sheetId, title, composer }));
+
+      // 4. Fetch the sheet itself for fields not contained in "logTarget"
+      if (!logTarget) return;
+
+      console.log("logTarget: ", logTarget);
+
+      const extraSheetInfoResult = await getSheetBySheetId(sheetId);
+      setSheetInfo(extraSheetInfoResult);
+      setIsLoading(false);
+    }
+
+    fetchFunction();
   }, []);
 
   const ratingBgMapped = ratingBg.map((item, index) => (
@@ -81,10 +100,9 @@ export default function Sheet() {
     ></div>
   ));
 
-  console.log(reviews)
+  // console.log("Log target:", logTarget);
 
-  // console.log("Log target:",logTarget)
-
+  if (isLoading) return <h1>Loading...</h1>;
   return (
     <div
       className="w-full h-fit
@@ -98,6 +116,10 @@ export default function Sheet() {
         >
           <h1 className="text-2xl md:text-4xl">{title}</h1>
           <p>{logTarget.composer}</p>
+          <p className="text-black/20 italic font-light">
+            Played by {sheetInfo?.reviewCount}{" "}
+            {sheetInfo?.reviewCount == 1 ? "person" : "people"}
+          </p>
         </article>
         <div className="flex flex-col h-[8rem] w-full max-w-[20rem] bg-secondary">
           <div
@@ -154,7 +176,7 @@ export default function Sheet() {
                 index={index}
                 authorProfileURLs={authorProfileURLs}
                 key={index}
-                authorSheetsTotal = {review.authorSheetsTotal}
+                authorSheetsTotal={review.authorSheetsTotal}
               />
             );
           })}
