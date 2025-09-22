@@ -172,7 +172,8 @@ export default function LogSheetDetail() {
                 alt="rating mask"
                 className="absolute w-[7rem] object-cover top-6 pointer-events-none"
               />
-              <button className="absolute right-0 top-4 btn-primary !px-3 !py-1">
+              <button className="absolute right-0 top-4 btn-primary !px-3 !py-1"
+              onClick={()=>setIsAnyLogWindowOpen(false)}>
                 Log
               </button>
             </div>

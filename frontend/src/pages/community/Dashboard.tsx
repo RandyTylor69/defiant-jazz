@@ -20,7 +20,7 @@ export default function Dashboard() {
     setLoading(true);
     async function dashboardInit() {
       // 1. get community favourites
-      const commFavouriteResult = await getCommunityFavourites(3);
+      const commFavouriteResult = await getCommunityFavourites(4);
       // 2. get reviews from followed users
       const followingReviewsResult = await getFollowingReviews(uid as string);
       setCommunityFavourites(commFavouriteResult);
