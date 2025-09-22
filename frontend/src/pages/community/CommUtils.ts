@@ -12,7 +12,7 @@ import {
 import { db } from "../../firebase/firebaseConfig";
 import { getFollowers } from "../../utils.ts";
 
-export async function getCommunityFavourites(minReviewCount: number) {
+export async function getCommunityFavourites() {
   let arr: DocumentData[] = [];
   // 1. get all sheets that qualify
   const sheetsRef = collection(db, "sheets");

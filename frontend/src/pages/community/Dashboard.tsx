@@ -20,7 +20,7 @@ export default function Dashboard() {
     setLoading(true);
     async function dashboardInit() {
       // 1. get community favourites
-      const commFavouriteResult = await getCommunityFavourites(4);
+      const commFavouriteResult = await getCommunityFavourites();
       // 2. get reviews from followed users
       const followingReviewsResult = await getFollowingReviews(uid as string);
       setCommunityFavourites(commFavouriteResult);
@@ -72,7 +72,7 @@ export default function Dashboard() {
                   })
                 }
               >
-                <h1 className="text-4xl font-bold text-black/70 break-words hyphens-auto m-4">
+                <h1 lang="de" className="text-4xl font-bold text-black/70 break-words hyphens-auto m-4">
                   {sheet.title}
                 </h1>
                 <div className="bg-black/10 px-4">
